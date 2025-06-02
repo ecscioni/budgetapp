@@ -1,9 +1,23 @@
 import React from 'react';
-import { StyleSheet, Text, View, ImageBackground } from 'react-native';
+import { StyleSheet, Text, View, ImageBackground, TouchableOpacity } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+
+type RootStackParamList = {
+  MainApp: undefined;
+};
+
+type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'MainApp'>;
 
 const image = { uri: 'https://imgur.com/WBhZZn5.png' };
 
 export const InicialScreen = () => {
+  const navigation = useNavigation<NavigationProp>();
+
+  const handleStartPress = () => {
+    navigation.navigate('MainApp');
+  };
+
   return (
     <View style={styles.container}>
       <ImageBackground source={image} resizeMode="cover" style={styles.image}>
@@ -14,9 +28,13 @@ export const InicialScreen = () => {
           <Text style={styles.title}>FUND</Text>
           <Text style={styles.title1}>FLOW</Text>
         </View>
-        <View style={styles.card}>
+        <TouchableOpacity 
+          style={styles.card}
+          onPress={handleStartPress}
+          activeOpacity={0.8}
+        >
           <Text style={styles.cardText}>START NOW</Text>
-        </View>
+        </TouchableOpacity>
       </ImageBackground>
     </View>
   );
