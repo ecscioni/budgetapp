@@ -29,3 +29,12 @@ export const darkTheme = {
     warning: '#F59E0B',
   },
 }; 
+
+// src/themes/index.ts
+export const colors = {
+  background: '#343434',
+  primary: '#6ef7b5',
+  text: '#ffffff',
+  subtext: '#999999',
+  card: '#2d2d2d'
+};
