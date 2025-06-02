@@ -4,8 +4,7 @@ npm-debug.log
 yarn-debug.log
 yarn-error.log
 
-# Expo
-# .expo/ - removido para permitir versionamento da pasta
+
 dist/
 web-build/
 
