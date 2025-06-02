@@ -5,7 +5,7 @@ yarn-debug.log
 yarn-error.log
 
 # Expo
-.expo/
+# .expo/ - removido para permitir versionamento da pasta
 dist/
 web-build/
 
