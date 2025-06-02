@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "FundFlow",
-    "slug": "fundflow-new",
+    "slug": "fundflow",
     "version": "1.0.0",
     "sdkVersion": "53.0.0",
     "platforms": ["ios", "android", "web"],
