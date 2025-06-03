@@ -30,7 +30,23 @@ async function initDB() {
     
 }
 
+app.get("/", (req, res) => {
+    res.send("its working");
+});
 
+app.get("/api/transactions/:user_id",async(req,res) =>{
+    try {
+        const {user_id} = req.params;
+        
+        const transactions = await sql`
+            SELECT * FROM transactions WHERE user_id = ${user_id} ORDER BY created_at DESC
+        `
+        res.status(200).json(transactions);
+    } catch (error) {
+        console.log("Error getting the transaction", error);
+            res.status(500).json({message:"Internal server error"});
+    }
+})
 
 app.post("/api/transactions", async (req,res) => {
     // title, amount, category, user_id
@@ -53,6 +69,32 @@ app.post("/api/transactions", async (req,res) => {
             
         }
 });
+
+
+app.delete("/api/transactions/:id",async(req,res) => {
+    try {
+        const {id} = req.params;
+
+        //POSTMAN keeps buffering when you put a string in /api/transaction/[insert string here]
+        if(isNaN(parseInt(id))) {
+            return res.status(400).json({message:"Invalid transaction ID"});
+        }
+
+        const result = await sql`
+        DELETE FROM transactions WHERE id = ${id} RETURNING *
+        `;
+
+        if(result.length == 0){
+            return res.status(404).json({message:"Transaction not found"});
+        }
+
+        res.status(200).json({message:"Transaction deleted successfully"});
+    } catch (error) {
+        console.log("Error deleting the transaction", error);
+            res.status(500).json({message:"Internal server error"});
+    }
+})
+
 
 
 initDB().then(() => {
