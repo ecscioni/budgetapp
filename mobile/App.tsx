@@ -26,7 +26,7 @@ const TabNavigator = () => {
           } else if (route.name === 'Transactions') {
             iconName = focused ? 'swap-horizontal' : 'swap-horizontal-outline';
           } else if (route.name === 'Cards') {
-            iconName = focused ? 'flag' : 'flag-outline';
+            iconName = focused ? 'card' : 'card-outline';
           } else if (route.name === 'Statistics') {
             iconName = focused ? 'bar-chart' : 'bar-chart-outline';
           } else {
@@ -35,13 +35,12 @@ const TabNavigator = () => {
 
           return <Ionicons name={iconName} size={size} color={color} />;
         },
-        tabBarActiveTintColor: '#2563EB',
+        tabBarActiveTintColor: '#48BF73',
         tabBarInactiveTintColor: 'gray',
-        headerShown: true,
-        headerTitle: 'FundFlow',
-        headerTitleStyle: {
-          color: '#2563EB',
-          fontWeight: 'bold',
+        headerShown: false,
+        tabBarStyle: {
+          backgroundColor: '#222222',
+          borderTopColor: 'transparent',
         },
       })}
     >
@@ -76,25 +75,25 @@ const TabNavigator = () => {
 
 export default function App() {
   return (
-    <NavigationContainer>
-      <Stack.Navigator
-        screenOptions={{
-          headerShown: false
-        }}
-      >
-        <Stack.Screen name="Inicial" component={InicialScreen} />
-        <Stack.Screen name="MainApp" component={TabNavigator} />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <View style={styles.container}>
+      <NavigationContainer>
+        <Stack.Navigator
+          screenOptions={{
+            headerShown: false
+          }}
+        >
+          <Stack.Screen name="Inicial" component={InicialScreen} />
+          <Stack.Screen name="MainApp" component={TabNavigator} />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    paddingTop: 50,
+    backgroundColor: '#222222',
   },
   title: {
     fontSize: 24,
