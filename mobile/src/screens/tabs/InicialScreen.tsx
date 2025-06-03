@@ -29,7 +29,7 @@ export const InicialScreen = () => {
           <Text style={styles.title1}>FLOW</Text>
         </View>
         <TouchableOpacity 
-          style={styles.card}
+          style={[styles.card, styles.shadow]} 
           onPress={handleStartPress}
           activeOpacity={0.8}
         >
@@ -53,7 +53,7 @@ const styles = StyleSheet.create({
   },
   opacityOverlay: {
     ...StyleSheet.absoluteFillObject, // Fill the entire ImageBackground
-    backgroundColor: 'rgba(0, 0, 0, 0.9)' // Black with 50% opacity
+    backgroundColor: '#343434' // Black with 50% opacity
   },
   overlay: {
     alignItems: 'center',
@@ -66,20 +66,27 @@ const styles = StyleSheet.create({
   },
   title1: {
     fontWeight: 'bold',
-    color: '#3B82F6', // Blue color
+    color: '#4ADE80', // Blue color
     marginTop: -25,
     marginBottom: 25,
     fontSize: 70
   },
   card: {
-    backgroundColor: 'rgba(22, 109, 250, 0.9)',
+    backgroundColor: '#4ADE80',
     padding: 20,
     paddingLeft: 65,
     paddingRight: 65,
     borderRadius: 5,
   },
   cardText: {
-    color: '#FFFFFF', // White text for visibility
+    color: '#494949', // White text for visibility
     textAlign: 'center'
+  },
+  shadow: {
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 20 },
+    shadowOpacity: 50,
+    shadowRadius: 35,
+    elevation: 15,
   }
 });
