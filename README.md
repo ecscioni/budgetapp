@@ -48,18 +48,6 @@ This was a collaborative project, where roles were divided for research, design,
 - Custom notifications
 - Integration with real banking APIs (research phase)
 
-## 📁 Project Structure
-
-```
-FundFlow/
-├── app/                      # React Native application
-│   └── components/           # Reusable UI components
-├── backend/                  # Express API
-│   └── routes/               # API route files
-├── assets/                   # App icons and splash screens
-├── lib/                      # Utility functions
-├── config/                   # Database and API configurations
-└── README.md                 # Project overview and instructions
 ```
 
 ## 🛠️ Installation
