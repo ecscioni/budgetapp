@@ -53,7 +53,7 @@ const styles = StyleSheet.create({
   },
   opacityOverlay: {
     ...StyleSheet.absoluteFillObject, // Fill the entire ImageBackground
-    backgroundColor: '#343434' // Black with 50% opacity
+    backgroundColor: '#222222' // Black with 50% opacity
   },
   overlay: {
     alignItems: 'center',
