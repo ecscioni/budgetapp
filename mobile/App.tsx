@@ -41,6 +41,12 @@ const TabNavigator = () => {
         tabBarStyle: {
           backgroundColor: '#222222',
           borderTopColor: 'transparent',
+          // Add subtle drop shadow without altering background or icons
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: -2 },
+          shadowOpacity: 0.3,
+          shadowRadius: 4,
+          elevation: 5,
         },
       })}
     >
