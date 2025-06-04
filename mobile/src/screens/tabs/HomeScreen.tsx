@@ -5,7 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 export const HomeScreen = () => {
   // TRANSACTIONS VISUALS
   const transactions = [
-    { id: '1', description: 'To Diego • School', date: '03 jun 2025', amount: '-59€', type: 'sent' },
+    { id: '1', description: 'To Jonh Doe • School', date: '03 jun 2025', amount: '-59€', type: 'sent' },
     { id: '2', description: 'From Fontys • Salary', date: '02 jun 2025', amount: '1000€', type: 'received' },
   ];
 
@@ -125,7 +125,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
   transactionsSection: {
-    // Adicionar padding ou margin se necessário
+   
   },
   transactionsHeader: {
     flexDirection: 'row',
@@ -145,7 +145,7 @@ const styles = StyleSheet.create({
   transactionItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#323232', // Fundo cinzento escuro para os itens
+    backgroundColor: '#323232', 
     padding: 15,
     borderRadius: 10,
     marginBottom: 10,
@@ -156,10 +156,10 @@ const styles = StyleSheet.create({
     marginRight: 15,
   },
   sentIcon: {
-    backgroundColor: '#444444', // Cinzento um pouco mais claro
+    backgroundColor: '#444444', 
   },
   receivedIcon: {
-    backgroundColor: '#66BB6A', // Verde
+    backgroundColor: '#66BB6A', 
   },
   transactionDetails: {
     flex: 1,
@@ -178,9 +178,9 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   sentAmount: {
-    color: '#FF5555', // Vermelho
+    color: '#FF5555', 
   },
   receivedAmount: {
-    color: '#66BB6A', // Verde
+    color: '#66BB6A', 
   },
 }); 
