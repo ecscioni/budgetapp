@@ -53,7 +53,7 @@ app.post("/api/transactions", async (req,res) => {
         try {
             const {title,amount,category,user_id} = req.body;
             if(!title || !user_id || !category || amount == undefined){
-                return res.status(400).json({message: "All fiels are required"});
+                return res.status(400).json({message: "All fields are required"});
             }
 
             const transaction = await sql`
@@ -75,7 +75,6 @@ app.delete("/api/transactions/:id",async(req,res) => {
     try {
         const {id} = req.params;
 
-        //POSTMAN keeps buffering when you put a string in /api/transaction/[insert string here]
         if(isNaN(parseInt(id))) {
             return res.status(400).json({message:"Invalid transaction ID"});
         }
