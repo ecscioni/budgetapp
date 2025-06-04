@@ -88,6 +88,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     color: '#66BB6A', 
+    marginLeft: 42,
   },
   headerIcons: {
     flexDirection: 'row',
@@ -108,7 +109,7 @@ const styles = StyleSheet.create({
   },
   buttonsSection: {
     flexDirection: 'row',
-    justifyContent: 'space-evenly',
+    justifyContent: 'space-between',
     marginBottom: 30,
   },
   button: {
@@ -140,7 +141,7 @@ const styles = StyleSheet.create({
   transactionsTitle: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#66BB6A', // green
+    color: '#66BB6A', // Verde
   },
   viewAllText: {
     fontSize: 14,
