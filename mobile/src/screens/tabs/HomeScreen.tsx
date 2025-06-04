@@ -108,16 +108,20 @@ const styles = StyleSheet.create({
   },
   buttonsSection: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
+    justifyContent: 'space-between',
     marginBottom: 30,
   },
   button: {
+    flex: 1,
     alignItems: 'center',
   },
   buttonIconContainer: {
-    backgroundColor: '#333333', // 
-    padding: 15,
+    backgroundColor: '#333333', 
+    width: 60,
+    height: 60,
     borderRadius: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
     marginBottom: 5,
   },
   buttonText: {
