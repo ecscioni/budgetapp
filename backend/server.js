@@ -37,7 +37,7 @@ app.post("/api/transactions", async (req,res) => {
         try {
             const {title,amount,category,user_id} = req.body;
             if(!title || !user_id || !category || amount == undefined){
-                return res.status(400).json({message: "All fiels are required"});
+                return res.status(400).json({message: "All fields are required"});
             }
 
             const transaction = await sql`
