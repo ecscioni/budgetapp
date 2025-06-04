@@ -75,7 +75,6 @@ app.delete("/api/transactions/:id",async(req,res) => {
     try {
         const {id} = req.params;
 
-        //POSTMAN keeps buffering when you put a string in /api/transaction/[insert string here]
         if(isNaN(parseInt(id))) {
             return res.status(400).json({message:"Invalid transaction ID"});
         }
