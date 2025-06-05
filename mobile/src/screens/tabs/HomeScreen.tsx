@@ -4,7 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { transactions } from '../../data/transactions';
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 
-// ✅ Define tab names and types
+//  Define tab names and types
 type TabParamList = {
   Home: undefined;
   Transactions: undefined;
@@ -108,7 +108,7 @@ export const HomeScreen = ({ navigation }: HomeScreenProps) => {
   );
 };
 
-// ✅ Styles
+// Styles
 const styles = StyleSheet.create({
   container: {
     flex: 1,
