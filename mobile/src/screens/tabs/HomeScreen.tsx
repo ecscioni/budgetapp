@@ -20,6 +20,17 @@ export const HomeScreen = () => {
         </View>
       </View>
 
+      {/* Credit Card Section */}
+      <View style={styles.cardSection}>
+        <Image
+          source={{
+            uri: 'https://imgur.com/QDiZGzg.png',
+          }}
+          style={styles.creditCardImage}
+          resizeMode="contain"
+      />
+      </View>
+
       <View style={styles.buttonsSection}>
         <TouchableOpacity style={styles.button} onPress={() => {}}>
           <View style={styles.buttonIconContainer}>
@@ -187,5 +198,12 @@ const styles = StyleSheet.create({
   },
   receivedAmount: {
     color: '#66BB6A', 
+  },
+  cardSection: {
+    marginBottom: 20,
+  },
+  creditCardImage: {
+    width: '100%',
+    height: 150,
   },
 }); 
