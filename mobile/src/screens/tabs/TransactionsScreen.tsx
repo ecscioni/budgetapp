@@ -1,32 +1,37 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, Text, ScrollView, TouchableOpacity, TextInput } from 'react-native';
+import { StyleSheet, View, Text, ScrollView, TouchableOpacity, TextInput, Modal } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { transactions as initialTransactions, Transaction } from '../../data/transactions';
 
 export const TransactionsScreen = () => {
   const [transactionList, setTransactionList] = useState<Transaction[]>(initialTransactions);
-  const [editingId, setEditingId] = useState<string | null>(null);
+  const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
   const [tempCategory, setTempCategory] = useState('');
 
   const handleDelete = (id: string) => {
     setTransactionList(prev => prev.filter(t => t.id !== id));
+    setSelectedTransaction(null);
   };
 
-  const startEditing = (id: string, category: string) => {
-    setEditingId(id);
-    setTempCategory(category);
+  const openModal = (transaction: Transaction) => {
+    setSelectedTransaction(transaction);
+    setTempCategory(transaction.category);
   };
 
-  const saveCategory = (id: string) => {
-    setTransactionList(prev => prev.map(t => (t.id === id ? { ...t, category: tempCategory } : t)));
-    setEditingId(null);
+  const saveCategory = () => {
+    if (!selectedTransaction) return;
+    setTransactionList(prev =>
+      prev.map(t => (t.id === selectedTransaction.id ? { ...t, category: tempCategory } : t))
+    );
+    setSelectedTransaction(null);
   };
 
   return (
-    <ScrollView style={styles.container}>
-      <Text style={styles.title}>TRANSACTIONS</Text>
-      {transactionList.map(transaction => (
-        <View key={transaction.id} style={styles.transactionItem}>
+    <View style={styles.container}>
+      <ScrollView>
+        <Text style={styles.title}>TRANSACTIONS</Text>
+        {transactionList.map(transaction => (
+          <TouchableOpacity key={transaction.id} style={styles.transactionItem} onPress={() => openModal(transaction)}>
           <View
             style={[
               styles.transactionIconContainer,
@@ -52,35 +57,37 @@ export const TransactionsScreen = () => {
           >
             {transaction.amount}
           </Text>
-          {editingId === transaction.id ? (
-            <View style={styles.editContainer}>
+        </TouchableOpacity>
+        ))}
+      </ScrollView>
+      {selectedTransaction && (
+        <Modal visible transparent animationType="slide">
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContent}>
+              <Text style={styles.modalTitle}>{selectedTransaction.counterparty}</Text>
               <TextInput
-                style={styles.categoryInput}
+                style={styles.modalInput}
                 value={tempCategory}
                 onChangeText={setTempCategory}
                 placeholder="Category"
                 placeholderTextColor="gray"
               />
-              <TouchableOpacity style={styles.saveButton} onPress={() => saveCategory(transaction.id)}>
-                <Text style={styles.actionText}>Save</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.cancelButton} onPress={() => setEditingId(null)}>
-                <Text style={styles.actionText}>Cancel</Text>
-              </TouchableOpacity>
+              <View style={styles.modalActions}>
+                <TouchableOpacity style={styles.saveButton} onPress={saveCategory}>
+                  <Text style={styles.actionText}>Save</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.deleteButton} onPress={() => handleDelete(selectedTransaction.id)}>
+                  <Text style={styles.actionText}>Delete</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.cancelButton} onPress={() => setSelectedTransaction(null)}>
+                  <Text style={styles.actionText}>Cancel</Text>
+                </TouchableOpacity>
+              </View>
             </View>
-          ) : (
-            <View style={styles.actionContainer}>
-              <TouchableOpacity style={styles.actionButton} onPress={() => startEditing(transaction.id, transaction.category)}>
-                <Text style={styles.actionText}>Categorize</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.actionButton} onPress={() => handleDelete(transaction.id)}>
-                <Text style={styles.actionText}>Delete</Text>
-              </TouchableOpacity>
-            </View>
-          )}
-        </View>
-      ))}
-    </ScrollView>
+          </View>
+        </Modal>
+      )}
+    </View>
   );
 };
 
@@ -187,6 +194,44 @@ const styles = StyleSheet.create({
     color: '#fff',
     paddingHorizontal: 8,
     paddingVertical: 4,
+    borderRadius: 6,
+    marginRight: 8,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContent: {
+    backgroundColor: '#2a2a2a',
+    padding: 20,
+    borderRadius: 10,
+    width: '80%',
+  },
+  modalTitle: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 10,
+    textAlign: 'center',
+  },
+  modalInput: {
+    backgroundColor: '#3a3a3a',
+    color: '#fff',
+    paddingHorizontal: 8,
+    paddingVertical: 6,
+    borderRadius: 6,
+    marginBottom: 15,
+  },
+  modalActions: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  deleteButton: {
+    backgroundColor: '#FF5555',
+    paddingVertical: 6,
+    paddingHorizontal: 10,
     borderRadius: 6,
     marginRight: 8,
   },
