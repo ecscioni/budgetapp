@@ -61,7 +61,7 @@ export const TransactionsScreen = () => {
         ))}
       </ScrollView>
       {selectedTransaction && (
-        <Modal visible transparent animationType="slide">
+        <Modal visible transparent animationType="fade">
           <View style={styles.modalOverlay}>
             <View style={styles.modalContent}>
               <Text style={styles.modalTitle}>{selectedTransaction.counterparty}</Text>
