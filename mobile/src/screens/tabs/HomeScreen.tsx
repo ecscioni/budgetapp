@@ -206,7 +206,7 @@ const styles = StyleSheet.create({
   },
   creditCardImage: {
     width: '100%',
-    height: 250,
+    height: 200,
     borderRadius: 15,
   },
   cardShadowContainer: {
