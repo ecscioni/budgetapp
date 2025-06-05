@@ -43,7 +43,7 @@ export const TransactionsScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#222222',
+    backgroundColor: '#1f1f1f',
     padding: 15,
     paddingTop: 40,
   },
@@ -57,10 +57,15 @@ const styles = StyleSheet.create({
   transactionItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#323232',
+    backgroundColor: '#2a2a2a',
     padding: 15,
     borderRadius: 10,
     marginBottom: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 3,
   },
   transactionIconContainer: {
     padding: 10,
