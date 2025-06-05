@@ -22,13 +22,15 @@ export const HomeScreen = () => {
 
       {/* Credit Card Section */}
       <View style={styles.cardSection}>
-        <Image
-          source={{
-            uri: 'https://imgur.com/Vuqf8wt.png',
-          }}
-          style={styles.creditCardImage}
-          resizeMode="contain"
-      />
+        <View style={styles.cardShadowContainer}>
+          <Image
+            source={{
+              uri: 'https://imgur.com/Vuqf8wt.png',
+            }}
+            style={styles.creditCardImage}
+            resizeMode="contain"
+          />
+        </View>
       </View>
 
       <View style={styles.buttonsSection}>
@@ -204,13 +206,17 @@ const styles = StyleSheet.create({
   },
   creditCardImage: {
     width: '100%',
-    height: 200,
+    height: 250,
+    borderRadius: 15,
+  },
+  cardShadowContainer: {
     borderRadius: 15,
     marginTop: 10,
     marginBottom: 15,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 1,
-    shadowRadius: 5,
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 5,
   },
-}); 
+});
