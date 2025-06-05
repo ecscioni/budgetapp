@@ -16,7 +16,7 @@ export const HomeScreen = () => {
         <Ionicons name="person-outline" size={24} color="#FFFFFF" />
         <Text style={styles.headerTitle}>HOME</Text>
         <View style={styles.headerIcons}>
-          <Ionicons name="notifications-outline" size={24} color="#FFFFFF" style={{ marginRight: 0 }} />
+          <Ionicons name="notifications-outline" size={24} color="#FFFFFF"/>
         </View>
       </View>
 
