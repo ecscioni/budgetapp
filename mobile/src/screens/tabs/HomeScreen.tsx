@@ -16,8 +16,7 @@ export const HomeScreen = () => {
         <Ionicons name="person-outline" size={24} color="#FFFFFF" />
         <Text style={styles.headerTitle}>HOME</Text>
         <View style={styles.headerIcons}>
-          <Ionicons name="notifications-outline" size={24} color="#FFFFFF" style={{ marginRight: 15 }} />
-          <Ionicons name="help-circle-outline" size={24} color="#FFFFFF" />
+          <Ionicons name="notifications-outline" size={24} color="#FFFFFF" style={{ marginRight: 0 }} />
         </View>
       </View>
 
@@ -88,7 +87,8 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     color: '#66BB6A', 
-    marginLeft: 42,
+    flex: 1,
+    textAlign: 'center',
   },
   headerIcons: {
     flexDirection: 'row',
