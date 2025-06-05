@@ -1,13 +1,9 @@
 import React from 'react';
 import { StyleSheet, View, Text, ScrollView, TouchableOpacity, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { transactions } from '../../data/transactions';
 
 export const HomeScreen = () => {
-  // TRANSACTIONS VISUALS
-  const transactions = [
-    { id: '1', description: 'To Jonh Doe • School', date: '03 jun 2025', amount: '-59€', type: 'sent' },
-    { id: '2', description: 'From Fontys • Salary', date: '02 jun 2025', amount: '1000€', type: 'received' },
-  ];
 
   return (
     <ScrollView style={styles.container}>
@@ -71,7 +67,9 @@ export const HomeScreen = () => {
               />
             </View>
             <View style={styles.transactionDetails}>
-              <Text style={styles.transactionDescription}>{transaction.description}</Text>
+              <Text style={styles.transactionDescription}>
+                {transaction.type === 'sent' ? `To ${transaction.counterparty}` : `From ${transaction.counterparty}`} • {transaction.category}
+              </Text>
               <Text style={styles.transactionDate}>{transaction.date}</Text>
             </View>
             <Text style={[styles.transactionAmount, transaction.type === 'sent' ? styles.sentAmount : styles.receivedAmount]}>{transaction.amount}</Text>
