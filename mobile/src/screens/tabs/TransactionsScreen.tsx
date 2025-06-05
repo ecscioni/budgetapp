@@ -1,13 +1,31 @@
-import React from 'react';
-import { StyleSheet, View, Text, ScrollView } from 'react-native';
+import React, { useState } from 'react';
+import { StyleSheet, View, Text, ScrollView, TouchableOpacity, TextInput } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { transactions } from '../../data/transactions';
+import { transactions as initialTransactions, Transaction } from '../../data/transactions';
 
 export const TransactionsScreen = () => {
+  const [transactionList, setTransactionList] = useState<Transaction[]>(initialTransactions);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [tempCategory, setTempCategory] = useState('');
+
+  const handleDelete = (id: string) => {
+    setTransactionList(prev => prev.filter(t => t.id !== id));
+  };
+
+  const startEditing = (id: string, category: string) => {
+    setEditingId(id);
+    setTempCategory(category);
+  };
+
+  const saveCategory = (id: string) => {
+    setTransactionList(prev => prev.map(t => (t.id === id ? { ...t, category: tempCategory } : t)));
+    setEditingId(null);
+  };
+
   return (
     <ScrollView style={styles.container}>
       <Text style={styles.title}>TRANSACTIONS</Text>
-      {transactions.map(transaction => (
+      {transactionList.map(transaction => (
         <View key={transaction.id} style={styles.transactionItem}>
           <View
             style={[
@@ -34,6 +52,32 @@ export const TransactionsScreen = () => {
           >
             {transaction.amount}
           </Text>
+          {editingId === transaction.id ? (
+            <View style={styles.editContainer}>
+              <TextInput
+                style={styles.categoryInput}
+                value={tempCategory}
+                onChangeText={setTempCategory}
+                placeholder="Category"
+                placeholderTextColor="gray"
+              />
+              <TouchableOpacity style={styles.saveButton} onPress={() => saveCategory(transaction.id)}>
+                <Text style={styles.actionText}>Save</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.cancelButton} onPress={() => setEditingId(null)}>
+                <Text style={styles.actionText}>Cancel</Text>
+              </TouchableOpacity>
+            </View>
+          ) : (
+            <View style={styles.actionContainer}>
+              <TouchableOpacity style={styles.actionButton} onPress={() => startEditing(transaction.id, transaction.category)}>
+                <Text style={styles.actionText}>Categorize</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.actionButton} onPress={() => handleDelete(transaction.id)}>
+                <Text style={styles.actionText}>Delete</Text>
+              </TouchableOpacity>
+            </View>
+          )}
         </View>
       ))}
     </ScrollView>
@@ -103,5 +147,47 @@ const styles = StyleSheet.create({
   },
   receivedAmount: {
     color: '#66BB6A',
+  },
+  actionContainer: {
+    flexDirection: 'row',
+    marginTop: 10,
+  },
+  actionButton: {
+    backgroundColor: '#444',
+    paddingVertical: 6,
+    paddingHorizontal: 10,
+    borderRadius: 6,
+    marginRight: 8,
+  },
+  saveButton: {
+    backgroundColor: '#66BB6A',
+    paddingVertical: 6,
+    paddingHorizontal: 10,
+    borderRadius: 6,
+    marginRight: 8,
+  },
+  cancelButton: {
+    backgroundColor: '#555',
+    paddingVertical: 6,
+    paddingHorizontal: 10,
+    borderRadius: 6,
+  },
+  actionText: {
+    color: '#FFFFFF',
+    fontSize: 12,
+  },
+  editContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 10,
+  },
+  categoryInput: {
+    flex: 1,
+    backgroundColor: '#3a3a3a',
+    color: '#fff',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 6,
+    marginRight: 8,
   },
 });
