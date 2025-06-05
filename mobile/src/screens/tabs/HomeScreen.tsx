@@ -18,15 +18,13 @@ export const HomeScreen = () => {
 
       {/* Credit Card Section */}
       <View style={styles.cardSection}>
-        <View style={styles.cardShadowContainer}>
-          <Image
-            source={{
-              uri: 'https://imgur.com/Vuqf8wt.png',
-            }}
-            style={styles.creditCardImage}
-            resizeMode="contain"
-          />
-        </View>
+        <Image
+          source={{
+            uri: 'https://imgur.com/3u4JHkm.png',
+          }}
+          style={styles.creditCardImage}
+          resizeMode="contain"
+      />
       </View>
 
       <View style={styles.buttonsSection}>
