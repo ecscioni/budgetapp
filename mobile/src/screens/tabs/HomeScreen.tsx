@@ -204,11 +204,13 @@ const styles = StyleSheet.create({
   },
   creditCardImage: {
     width: '100%',
-    height: 250,
+    height: 200,
     borderRadius: 15,
+    marginTop: 10,
+    marginBottom: 15,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
+    shadowOpacity: 1,
+    shadowRadius: 5,
   },
 }); 
