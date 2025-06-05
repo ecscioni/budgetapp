@@ -24,7 +24,7 @@ export const HomeScreen = () => {
       <View style={styles.cardSection}>
         <Image
           source={{
-            uri: 'https://imgur.com/Vuqf8wt.png',
+            uri: 'https://imgur.com/3u4JHkm.png',
           }}
           style={styles.creditCardImage}
           resizeMode="contain"
