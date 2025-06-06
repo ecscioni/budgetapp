@@ -7,6 +7,8 @@ export interface Transaction {
   date: string;
   amount: string;
   type: 'sent' | 'received';
+  /** Whether the transaction has been archived */
+  archived?: boolean;
 }
 
 export const transactions: Transaction[] = [
@@ -18,6 +20,7 @@ export const transactions: Transaction[] = [
     date: '03 jun 2025',
     amount: '-59€',
     type: 'sent',
+    archived: false,
   },
   {
     id: '2',
@@ -27,6 +30,7 @@ export const transactions: Transaction[] = [
     date: '02 jun 2025',
     amount: '1000€',
     type: 'received',
+    archived: false,
   },
   {
     id: '3',
@@ -36,6 +40,7 @@ export const transactions: Transaction[] = [
     date: '01 jun 2025',
     amount: '-4€',
     type: 'sent',
+    archived: false,
   },
   {
     id: '4',
@@ -45,6 +50,7 @@ export const transactions: Transaction[] = [
     date: '31 may 2025',
     amount: '-79€',
     type: 'sent',
+    archived: false,
   },
   {
     id: '5',
@@ -54,6 +60,7 @@ export const transactions: Transaction[] = [
     date: '30 may 2025',
     amount: '450€',
     type: 'received',
+    archived: false,
   },
   {
     id: '6',
@@ -63,6 +70,7 @@ export const transactions: Transaction[] = [
     date: '29 may 2025',
     amount: '-35€',
     type: 'sent',
+    archived: false,
   },
   {
     id: '7',
@@ -72,6 +80,7 @@ export const transactions: Transaction[] = [
     date: '28 may 2025',
     amount: '-10€',
     type: 'sent',
+    archived: false,
   },
   {
     id: '8',
@@ -81,5 +90,6 @@ export const transactions: Transaction[] = [
     date: '27 may 2025',
     amount: '-60€',
     type: 'sent',
+    archived: false,
   },
 ];
