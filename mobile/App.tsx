@@ -5,13 +5,14 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Ionicons } from '@expo/vector-icons';
-
 import { HomeScreen } from './src/screens/tabs/HomeScreen';
 import { TransactionsScreen } from './src/screens/tabs/TransactionsScreen';
 import { CardsScreen } from './src/screens/tabs/CardsScreen';
 import { StatisticsScreen } from './src/screens/tabs/StatisticsScreen';
 import { ProfileScreen } from './src/screens/tabs/ProfileScreen';
 import { InicialScreen } from './src/screens/tabs/InicialScreen';
+import { LoginScreen } from './src/screens/auth/LoginScreen';
+import { RegisterScreen } from './src/screens/auth/RegisterScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -74,6 +75,8 @@ export default function App() {
         <NavigationContainer>
           <Stack.Navigator screenOptions={{ headerShown: false }}>
             <Stack.Screen name="Inicial" component={InicialScreen} />
+            <Stack.Screen name="Login" component={LoginScreen} />
+            <Stack.Screen name="Register" component={RegisterScreen} />
             <Stack.Screen name="MainApp" component={TabNavigator} />
           </Stack.Navigator>
         </NavigationContainer>
