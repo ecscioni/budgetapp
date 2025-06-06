@@ -3,6 +3,7 @@ import { StyleSheet, View, Text, Platform } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Ionicons } from '@expo/vector-icons';
 import { HomeScreen } from './src/screens/tabs/HomeScreen';
 import { TransactionsScreen } from './src/screens/tabs/TransactionsScreen';
@@ -10,6 +11,8 @@ import { CardsScreen } from './src/screens/tabs/CardsScreen';
 import { StatisticsScreen } from './src/screens/tabs/StatisticsScreen';
 import { ProfileScreen } from './src/screens/tabs/ProfileScreen';
 import { InicialScreen } from './src/screens/tabs/InicialScreen';
+import { LoginScreen } from './src/screens/auth/LoginScreen';
+import { RegisterScreen } from './src/screens/auth/RegisterScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -42,7 +45,6 @@ const TabNavigator = () => {
           backgroundColor: '#222222',
           borderTopColor: 'transparent',
           borderTopWidth: 0,
-          // Drop shadow on both iOS and Android without changing colors
           ...Platform.select({
             ios: {
               shadowColor: '#000',
@@ -57,49 +59,29 @@ const TabNavigator = () => {
         },
       })}
     >
-      <Tab.Screen 
-        name="Home" 
-        component={HomeScreen}
-        options={{ title: 'Home' }}
-      />
-      <Tab.Screen 
-        name="Transactions" 
-        component={TransactionsScreen}
-        options={{ title: 'Transactions' }}
-      />
-      <Tab.Screen 
-        name="Cards" 
-        component={CardsScreen}
-        options={{ title: 'Cards' }}
-      />
-      <Tab.Screen 
-        name="Statistics" 
-        component={StatisticsScreen}
-        options={{ title: 'Statistics' }}
-      />
-      <Tab.Screen 
-        name="Profile" 
-        component={ProfileScreen}
-        options={{ title: 'Profile' }}
-      />
+      <Tab.Screen name="Home" component={HomeScreen} options={{ title: 'Home' }} />
+      <Tab.Screen name="Transactions" component={TransactionsScreen} options={{ title: 'Transactions' }} />
+      <Tab.Screen name="Cards" component={CardsScreen} options={{ title: 'Cards' }} />
+      <Tab.Screen name="Statistics" component={StatisticsScreen} options={{ title: 'Statistics' }} />
+      <Tab.Screen name="Profile" component={ProfileScreen} options={{ title: 'Profile' }} />
     </Tab.Navigator>
   );
 };
 
 export default function App() {
   return (
-    <View style={styles.container}>
-      <NavigationContainer>
-        <Stack.Navigator
-          screenOptions={{
-            headerShown: false
-          }}
-        >
-          <Stack.Screen name="Inicial" component={InicialScreen} />
-          <Stack.Screen name="MainApp" component={TabNavigator} />
-        </Stack.Navigator>
-      </NavigationContainer>
-    </View>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <View style={styles.container}>
+        <NavigationContainer>
+          <Stack.Navigator screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="Inicial" component={InicialScreen} />
+            <Stack.Screen name="Login" component={LoginScreen} />
+            <Stack.Screen name="Register" component={RegisterScreen} />
+            <Stack.Screen name="MainApp" component={TabNavigator} />
+          </Stack.Navigator>
+        </NavigationContainer>
+      </View>
+    </GestureHandlerRootView>
   );
 }
 
@@ -112,5 +94,5 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     color: '#2563EB',
-  }
+  },
 });
