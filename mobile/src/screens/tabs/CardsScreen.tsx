@@ -62,7 +62,7 @@ export const CardsScreen = () => {
           pagingEnabled={true}
           decelerationRate="fast"
           style={{ flexGrow: 0, width: SCREEN_WIDTH }}
-          contentContainerStyle={{ paddingLeft: 28, paddingRight: 32 }}
+          contentContainerStyle={{ paddingLeft: 27, paddingRight: 32 }}
           onMomentumScrollEnd={handleMomentumScrollEnd}
           getItemLayout={(_, index) => ({ length: SNAP_INTERVAL, offset: SNAP_INTERVAL * index, index })}
           initialScrollIndex={0}
