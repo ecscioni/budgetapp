@@ -8,7 +8,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { HomeScreen } from './src/screens/tabs/HomeScreen';
 import { TransactionsScreen } from './src/screens/tabs/TransactionsScreen';
 import { CardsScreen } from './src/screens/tabs/CardsScreen';
-import { StatisticsScreen } from './src/screens/tabs/StatisticsScreen';
+import StatisticsScreen from './src/screens/tabs/StatisticsScreen';
 import { ProfileScreen } from './src/screens/tabs/ProfileScreen';
 import { InicialScreen } from './src/screens/tabs/InicialScreen';
 import { LoginScreen } from './src/screens/auth/LoginScreen';
