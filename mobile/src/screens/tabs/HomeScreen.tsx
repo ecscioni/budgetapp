@@ -46,13 +46,13 @@ export const HomeScreen = ({ navigation }: HomeScreenProps) => {
           <View style={styles.buttonIconContainer}>
             <Ionicons name="cash-outline" size={24} color="#4CAF50" />
           </View>
-          <Text style={styles.buttonText}>Quick Transfer</Text>
+          <Text style={styles.buttonText}>Create budget</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.button} onPress={() => {}}>
           <View style={styles.buttonIconContainer}>
             <Ionicons name="repeat" size={24} color="#4CAF50" />
           </View>
-          <Text style={styles.buttonText}>New Transaction</Text>
+          <Text style={styles.buttonText}>Add goals</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.button} onPress={() => {}}>
           <View style={styles.buttonIconContainer}>
