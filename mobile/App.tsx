@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View, Text } from 'react-native';
+import { StyleSheet, View, Text, Platform } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -41,6 +41,19 @@ const TabNavigator = () => {
         tabBarStyle: {
           backgroundColor: '#222222',
           borderTopColor: 'transparent',
+          borderTopWidth: 0,
+          // Drop shadow on both iOS and Android without changing colors
+          ...Platform.select({
+            ios: {
+              shadowColor: '#000',
+              shadowOffset: { width: 0, height: -2 },
+              shadowOpacity: 0.3,
+              shadowRadius: 4,
+            },
+            android: {
+              elevation: 30,
+            },
+          }),
         },
       })}
     >

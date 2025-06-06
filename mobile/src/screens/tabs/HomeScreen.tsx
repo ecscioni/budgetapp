@@ -1,14 +1,25 @@
 import React from 'react';
 import { StyleSheet, View, Text, ScrollView, TouchableOpacity, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { transactions } from '../../data/transactions';
+import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 
-export const HomeScreen = () => {
-  // TRANSACTIONS VISUALS
-  const transactions = [
-    { id: '1', description: 'To Jonh Doe • School', date: '03 jun 2025', amount: '-59€', type: 'sent' },
-    { id: '2', description: 'From Fontys • Salary', date: '02 jun 2025', amount: '1000€', type: 'received' },
-  ];
+//  Define tab names and types
+type TabParamList = {
+  Home: undefined;
+  Transactions: undefined;
+  Cards: undefined;
+  Statistics: undefined;
+  Profile: undefined;
+};
 
+// Define the prop type for navigation
+type HomeScreenProps = {
+  navigation: BottomTabNavigationProp<TabParamList, 'Home'>;
+};
+
+// Main HomeScreen component
+export const HomeScreen = ({ navigation }: HomeScreenProps) => {
   return (
     <ScrollView style={styles.container}>
       {/* Header */}
@@ -16,23 +27,32 @@ export const HomeScreen = () => {
         <Ionicons name="person-outline" size={24} color="#FFFFFF" />
         <Text style={styles.headerTitle}>HOME</Text>
         <View style={styles.headerIcons}>
-          <Ionicons name="notifications-outline" size={24} color="#FFFFFF" style={{ marginRight: 15 }} />
-          <Ionicons name="help-circle-outline" size={24} color="#FFFFFF" />
+          <Ionicons name="notifications-outline" size={24} color="#FFFFFF" />
         </View>
       </View>
 
+      {/* Credit Card Section */}
+      <View style={styles.cardSection}>
+        <Image
+          source={{ uri: 'https://imgur.com/3u4JHkm.png' }}
+          style={styles.creditCardImage}
+          resizeMode="contain"
+        />
+      </View>
+
+      {/* Quick Action Buttons */}
       <View style={styles.buttonsSection}>
         <TouchableOpacity style={styles.button} onPress={() => {}}>
           <View style={styles.buttonIconContainer}>
             <Ionicons name="cash-outline" size={24} color="#4CAF50" />
           </View>
-          <Text style={styles.buttonText}>Fund Transfer</Text>
+          <Text style={styles.buttonText}>Quick Transfer</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.button} onPress={() => {}}>
           <View style={styles.buttonIconContainer}>
             <Ionicons name="repeat" size={24} color="#4CAF50" />
           </View>
-          <Text style={styles.buttonText}>Add Money</Text>
+          <Text style={styles.buttonText}>New Transaction</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.button} onPress={() => {}}>
           <View style={styles.buttonIconContainer}>
@@ -42,16 +62,23 @@ export const HomeScreen = () => {
         </TouchableOpacity>
       </View>
 
+      {/* Recent Transactions */}
       <View style={styles.transactionsSection}>
         <View style={styles.transactionsHeader}>
           <Text style={styles.transactionsTitle}>Recent Transactions</Text>
-          <TouchableOpacity onPress={() => {}}>
+          <TouchableOpacity onPress={() => navigation.navigate('Transactions')}>
             <Text style={styles.viewAllText}>View All</Text>
           </TouchableOpacity>
         </View>
+
         {transactions.map(transaction => (
           <View key={transaction.id} style={styles.transactionItem}>
-            <View style={[styles.transactionIconContainer, transaction.type === 'sent' ? styles.sentIcon : styles.receivedIcon]}>
+            <View
+              style={[
+                styles.transactionIconContainer,
+                transaction.type === 'sent' ? styles.sentIcon : styles.receivedIcon,
+              ]}
+            >
               <Ionicons
                 name={transaction.type === 'sent' ? 'arrow-up' : 'arrow-down'}
                 size={20}
@@ -59,10 +86,21 @@ export const HomeScreen = () => {
               />
             </View>
             <View style={styles.transactionDetails}>
-              <Text style={styles.transactionDescription}>{transaction.description}</Text>
+              <Text style={styles.transactionDescription}>
+                {transaction.type === 'sent'
+                  ? `To ${transaction.counterparty}`
+                  : `From ${transaction.counterparty}`} • {transaction.category}
+              </Text>
               <Text style={styles.transactionDate}>{transaction.date}</Text>
             </View>
-            <Text style={[styles.transactionAmount, transaction.type === 'sent' ? styles.sentAmount : styles.receivedAmount]}>{transaction.amount}</Text>
+            <Text
+              style={[
+                styles.transactionAmount,
+                transaction.type === 'sent' ? styles.sentAmount : styles.receivedAmount,
+              ]}
+            >
+              {transaction.amount}
+            </Text>
           </View>
         ))}
       </View>
@@ -70,12 +108,13 @@ export const HomeScreen = () => {
   );
 };
 
+// Styles
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#222222', 
+    backgroundColor: '#1f1f1f',
     padding: 15,
-    paddingTop: 20, 
+    paddingTop: 20,
   },
   header: {
     flexDirection: 'row',
@@ -87,46 +126,36 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#66BB6A', 
+    color: '#66BB6A',
+    flex: 1,
+    textAlign: 'center',
   },
   headerIcons: {
     flexDirection: 'row',
   },
-  slideIndicators: {
-    flexDirection: 'row',
-    marginTop: 10,
-  },
-  indicator: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: 'gray',
-    marginHorizontal: 4,
-  },
-  activeIndicator: {
-    backgroundColor: 'white',
-  },
   buttonsSection: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
+    justifyContent: 'space-between',
     marginBottom: 30,
   },
   button: {
+    flex: 1,
     alignItems: 'center',
   },
   buttonIconContainer: {
-    backgroundColor: '#333333', // 
-    padding: 15,
+    backgroundColor: '#333333',
+    width: 60,
+    height: 60,
     borderRadius: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
     marginBottom: 5,
   },
   buttonText: {
     color: '#FFFFFF',
     fontSize: 12,
   },
-  transactionsSection: {
-   
-  },
+  transactionsSection: {},
   transactionsHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -136,7 +165,7 @@ const styles = StyleSheet.create({
   transactionsTitle: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#66BB6A', // Verde
+    color: '#66BB6A',
   },
   viewAllText: {
     fontSize: 14,
@@ -145,10 +174,15 @@ const styles = StyleSheet.create({
   transactionItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#323232', 
+    backgroundColor: '#2a2a2a',
     padding: 15,
     borderRadius: 10,
     marginBottom: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 3,
   },
   transactionIconContainer: {
     padding: 10,
@@ -156,10 +190,10 @@ const styles = StyleSheet.create({
     marginRight: 15,
   },
   sentIcon: {
-    backgroundColor: '#444444', 
+    backgroundColor: '#444444',
   },
   receivedIcon: {
-    backgroundColor: '#66BB6A', 
+    backgroundColor: '#66BB6A',
   },
   transactionDetails: {
     flex: 1,
@@ -178,9 +212,17 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   sentAmount: {
-    color: '#FF5555', 
+    color: '#FF5555',
   },
   receivedAmount: {
-    color: '#66BB6A', 
+    color: '#66BB6A',
   },
-}); 
+  cardSection: {
+    marginBottom: 20,
+  },
+  creditCardImage: {
+    width: '100%',
+    height: 200,
+    borderRadius: 15,
+  },
+});
