@@ -1,23 +1,21 @@
-// [ same imports ]
 import React, { useState } from 'react';
 import { StyleSheet, View, Text, ScrollView, TouchableOpacity, Modal } from 'react-native';
 import { Swipeable } from 'react-native-gesture-handler';
 import { Ionicons } from '@expo/vector-icons';
 import { transactions as initialTransactions, Transaction } from '../../data/transactions';
+import SummaryCard from '../../components/SummaryCard';
 
 const CATEGORIES = [
   { label: 'Groceries', emoji: '🛒' },
   { label: 'Bills', emoji: '💡' },
   { label: 'Investments', emoji: '📈' },
   { label: 'Savings', emoji: '💰' },
+  { label: 'Incomes', emoji: '💵' }, // auto-assigned, excluded from modal
 ];
 
 export const TransactionsScreen = () => {
   const [transactionList, setTransactionList] = useState<Transaction[]>(
     initialTransactions.filter(t => !t.archived)
-  );
-  const [archivedTransactions, setArchivedTransactions] = useState<Transaction[]>(
-    initialTransactions.filter(t => t.archived)
   );
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
   const [tempCategory, setTempCategory] = useState('');
@@ -28,6 +26,7 @@ export const TransactionsScreen = () => {
   };
 
   const openModal = (transaction: Transaction) => {
+    if (transaction.type === 'received') return; // no modal for incomes
     setSelectedTransaction(transaction);
     setTempCategory(transaction.category);
   };
@@ -42,27 +41,47 @@ export const TransactionsScreen = () => {
     setSelectedTransaction(null);
   };
 
+  const getCategoryTotal = (transactions: Transaction[]) => {
+    const total = transactions.reduce((sum, t) => {
+      const cleaned = parseFloat(t.amount.replace('€', '').replace(',', '.'));
+      return sum + cleaned;
+    }, 0);
+    return {
+      label: total >= 0 ? `Total Gained: €${total}` : `Total Spent: €${Math.abs(total)}`,
+      color: total >= 0 ? '#66BB6A' : '#FF5555',
+    };
+  };
+
   return (
     <View style={styles.container}>
       <ScrollView>
-        <Text style={styles.title}>TRANSACTIONS</Text>
+        <SummaryCard transactions={transactionList} />
+
         {CATEGORIES.map(({ label }) => {
-          const items = transactionList.filter(t => t.category === label);
+          const items = transactionList.filter(t =>
+            label === 'Incomes' ? t.type === 'received' : t.category === label && t.type === 'sent'
+          );
           if (items.length === 0) return null;
+
+          const summary = getCategoryTotal(items);
+
           return (
-            <View key={label}>
+            <View key={label} style={{ marginBottom: 20 }}>
               <Text style={styles.categoryHeader}>{label}</Text>
+
               {items.map(transaction => (
                 <Swipeable
                   key={transaction.id}
-                  renderLeftActions={() => (
-                    <TouchableOpacity
-                      style={[styles.swipeAction, styles.modalSwipeAction]}
-                      onPress={() => openModal(transaction)}
-                    >
-                      <Ionicons name="create-outline" size={24} color="#fff" />
-                    </TouchableOpacity>
-                  )}
+                  renderLeftActions={() =>
+                    transaction.type === 'sent' ? (
+                      <TouchableOpacity
+                        style={[styles.swipeAction, styles.modalSwipeAction]}
+                        onPress={() => openModal(transaction)}
+                      >
+                        <Ionicons name="create-outline" size={24} color="#fff" />
+                      </TouchableOpacity>
+                    ) : null
+                  }
                   renderRightActions={() => (
                     <TouchableOpacity
                       style={[styles.swipeAction, styles.deleteAction]}
@@ -109,6 +128,10 @@ export const TransactionsScreen = () => {
                   </TouchableOpacity>
                 </Swipeable>
               ))}
+
+              <Text style={[styles.categorySummary, { color: summary.color }]}>
+                {summary.label}
+              </Text>
             </View>
           );
         })}
@@ -121,7 +144,7 @@ export const TransactionsScreen = () => {
               <Text style={styles.modalTitle}>{selectedTransaction.counterparty}</Text>
 
               <View style={styles.categorySelect}>
-                {CATEGORIES.map(({ label, emoji }) => (
+                {CATEGORIES.filter(c => c.label !== 'Incomes').map(({ label, emoji }) => (
                   <TouchableOpacity
                     key={label}
                     style={[
@@ -160,19 +183,17 @@ const styles = StyleSheet.create({
     padding: 15,
     paddingTop: 40,
   },
-  title: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#66BB6A',
-    textAlign: 'center',
-    marginBottom: 20,
-  },
   categoryHeader: {
     color: '#FFFFFF',
     fontSize: 16,
     fontWeight: '600',
-    marginTop: 10,
     marginBottom: 6,
+  },
+  categorySummary: {
+    fontSize: 14,
+    fontWeight: '600',
+    marginTop: 6,
+    textAlign: 'right',
   },
   transactionItem: {
     flexDirection: 'row',
@@ -181,11 +202,6 @@ const styles = StyleSheet.create({
     padding: 15,
     borderRadius: 10,
     marginBottom: 10,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-    elevation: 3,
   },
   transactionIconContainer: {
     padding: 10,
