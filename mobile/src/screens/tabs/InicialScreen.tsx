@@ -5,9 +5,10 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 type RootStackParamList = {
   MainApp: undefined;
+  Login: undefined;
 };
 
-type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'MainApp'>;
+type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'MainApp' | 'Login'>;
 
 const image = { uri: 'https://imgur.com/WBhZZn5.png' };
 
@@ -15,7 +16,7 @@ export const InicialScreen = () => {
   const navigation = useNavigation<NavigationProp>();
 
   const handleStartPress = () => {
-    navigation.navigate('MainApp');
+    navigation.navigate('Login');
   };
 
   return (
