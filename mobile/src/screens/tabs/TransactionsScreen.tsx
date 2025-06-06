@@ -46,6 +46,7 @@ export const TransactionsScreen = () => {
           </View>
           <View style={styles.transactionDetails}>
             <Text style={styles.transactionCounterparty}>{transaction.counterparty}</Text>
+            <Text style={styles.transactionDescription}>{transaction.description}</Text>
             <Text style={styles.transactionCategory}>{transaction.category}</Text>
             <Text style={styles.transactionDate}>{transaction.date}</Text>
           </View>
@@ -136,6 +137,10 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  transactionDescription: {
+    color: '#BBBBBB',
+    fontSize: 14,
   },
   transactionCategory: {
     color: 'gray',
