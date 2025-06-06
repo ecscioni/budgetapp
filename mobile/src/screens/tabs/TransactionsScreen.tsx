@@ -1,16 +1,32 @@
 import React, { useState } from 'react';
 import { StyleSheet, View, Text, ScrollView, TouchableOpacity, TextInput, Modal } from 'react-native';
+import { Swipeable } from 'react-native-gesture-handler';
 import { Ionicons } from '@expo/vector-icons';
 import { transactions as initialTransactions, Transaction } from '../../data/transactions';
 
 export const TransactionsScreen = () => {
-  const [transactionList, setTransactionList] = useState<Transaction[]>(initialTransactions);
+  const [transactionList, setTransactionList] = useState<Transaction[]>(
+    initialTransactions.filter(t => !t.archived)
+  );
+  const [archivedTransactions, setArchivedTransactions] = useState<Transaction[]>(
+    initialTransactions.filter(t => t.archived)
+  );
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
   const [tempCategory, setTempCategory] = useState('');
 
   const handleDelete = (id: string) => {
     setTransactionList(prev => prev.filter(t => t.id !== id));
     setSelectedTransaction(null);
+  };
+
+  const handleArchive = (id: string) => {
+    setTransactionList(prev => {
+      const archived = prev.find(t => t.id === id);
+      if (archived) {
+        setArchivedTransactions(a => [...a, { ...archived, archived: true }]);
+      }
+      return prev.filter(t => t.id !== id);
+    });
   };
 
   const openModal = (transaction: Transaction) => {
@@ -31,33 +47,54 @@ export const TransactionsScreen = () => {
       <ScrollView>
         <Text style={styles.title}>TRANSACTIONS</Text>
         {transactionList.map(transaction => (
-          <TouchableOpacity key={transaction.id} style={styles.transactionItem} onPress={() => openModal(transaction)}>
-          <View
-            style={[
-              styles.transactionIconContainer,
-              transaction.type === 'sent' ? styles.sentIcon : styles.receivedIcon,
-            ]}
+          <Swipeable
+            key={transaction.id}
+            renderLeftActions={() => (
+              <TouchableOpacity
+                style={[styles.swipeAction, styles.archiveAction]}
+                onPress={() => handleArchive(transaction.id)}
+              >
+                <Ionicons name="archive" size={24} color="#fff" />
+              </TouchableOpacity>
+            )}
+            renderRightActions={() => (
+              <TouchableOpacity
+                style={[styles.swipeAction, styles.deleteAction]}
+                onPress={() => handleDelete(transaction.id)}
+              >
+                <Ionicons name="trash" size={24} color="#fff" />
+              </TouchableOpacity>
+            )}
           >
-            <Ionicons
-              name={transaction.type === 'sent' ? 'arrow-up' : 'arrow-down'}
-              size={20}
-              color="#FFFFFF"
-            />
-          </View>
-          <View style={styles.transactionDetails}>
-            <Text style={styles.transactionCounterparty}>{transaction.counterparty}</Text>
-            <Text style={styles.transactionCategory}>{transaction.category}</Text>
-            <Text style={styles.transactionDate}>{transaction.date}</Text>
-          </View>
-          <Text
-            style={[
-              styles.transactionAmount,
-              transaction.type === 'sent' ? styles.sentAmount : styles.receivedAmount,
-            ]}
-          >
-            {transaction.amount}
-          </Text>
-        </TouchableOpacity>
+            <TouchableOpacity style={styles.transactionItem} onPress={() => openModal(transaction)}>
+              <View
+                style={[
+                  styles.transactionIconContainer,
+                  transaction.type === 'sent' ? styles.sentIcon : styles.receivedIcon,
+                ]}
+              >
+                <Ionicons
+                  name={transaction.type === 'sent' ? 'arrow-up' : 'arrow-down'}
+                  size={20}
+                  color="#FFFFFF"
+                />
+              </View>
+              <View style={styles.transactionDetails}>
+                <Text style={styles.transactionCounterparty}>{transaction.counterparty}</Text>
+                <Text style={styles.transactionDescription}>{transaction.description}</Text>
+                <Text style={styles.transactionCategory}>{transaction.category}</Text>
+                <Text style={styles.transactionDate}>{transaction.date}</Text>
+              </View>
+              <Text
+                style={[
+                  styles.transactionAmount,
+                  transaction.type === 'sent' ? styles.sentAmount : styles.receivedAmount,
+                ]}
+              >
+                {transaction.amount}
+              </Text>
+            </TouchableOpacity>
+          </Swipeable>
         ))}
       </ScrollView>
       {selectedTransaction && (
@@ -137,6 +174,10 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
   },
+  transactionDescription: {
+    color: '#BBBBBB',
+    fontSize: 14,
+  },
   transactionCategory: {
     color: 'gray',
     fontSize: 14,
@@ -154,6 +195,20 @@ const styles = StyleSheet.create({
   },
   receivedAmount: {
     color: '#66BB6A',
+  },
+  swipeAction: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: 80,
+    marginBottom: 10,
+  },
+  archiveAction: {
+    backgroundColor: '#888',
+    borderRadius: 10,
+  },
+  deleteAction: {
+    backgroundColor: '#FF5555',
+    borderRadius: 10,
   },
   actionContainer: {
     flexDirection: 'row',
