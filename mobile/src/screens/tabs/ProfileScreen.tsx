@@ -17,6 +17,9 @@ export const ProfileScreen = () => {
       <TouchableOpacity style={styles.itemBox} onPress={() => console.log('Notifications pressed')}>
         <Text style={styles.option}>Notifications & offers</Text>
       </TouchableOpacity>
+      <TouchableOpacity style={styles.logOutBox}>
+        <Text style={styles.option}>Logout</Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -48,4 +51,15 @@ const styles = StyleSheet.create({
     color: '#ffffff',
     textAlign: 'left',
   },
+  logOutBox: {
+     backgroundColor: 'green',
+    borderRadius: 10,
+    padding: 16,
+    marginBottom: 10,
+    width: '80%',
+    alignItems: 'flex-start',
+  },
+    
+  
+  
 });
