@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, Modal, TouchableOpacity } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 import { Transaction } from '../data/transactions';
 
 type Props = {
@@ -21,11 +23,20 @@ const SummaryCard: React.FC<Props> = ({ transactions }) => {
 
   return (
     <>
-      <TouchableOpacity onPress={() => setModalVisible(true)}>
-        <View style={styles.card}>
-          <Text style={styles.title}>Financial Summary</Text>
-          <Text style={styles.subtitle}>Tap to view</Text>
-        </View>
+      <TouchableOpacity
+        onPress={() => setModalVisible(true)}
+        activeOpacity={0.9}
+      >
+        <LinearGradient
+          colors={["#48BF73", "#2E7D32"]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={styles.card}
+        >
+          <Text style={styles.title}>Balance</Text>
+          <Text style={styles.balance}>€{balance.toFixed(2)}</Text>
+          <Text style={styles.subtitle}>Tap for details</Text>
+        </LinearGradient>
       </TouchableOpacity>
 
       <Modal visible={modalVisible} transparent animationType="fade">
@@ -33,9 +44,29 @@ const SummaryCard: React.FC<Props> = ({ transactions }) => {
           <View style={styles.modalContent}>
             <Text style={styles.modalTitle}>Overview</Text>
 
-            <View style={styles.detailRow}><Text style={styles.label}>Income</Text><Text style={[styles.value, styles.income]}>€{income.toFixed(2)}</Text></View>
-            <View style={styles.detailRow}><Text style={styles.label}>Spent</Text><Text style={[styles.value, styles.spent]}>€{spent.toFixed(2)}</Text></View>
-            <View style={styles.detailRow}><Text style={styles.label}>Balance</Text><Text style={styles.value}>€{balance.toFixed(2)}</Text></View>
+            <View style={styles.detailRow}>
+              <View style={styles.rowLabel}>
+                <Ionicons name="arrow-down" size={18} color="#A5D6A7" />
+                <Text style={[styles.label, styles.rowText]}>Income</Text>
+              </View>
+              <Text style={[styles.value, styles.income]}>€{income.toFixed(2)}</Text>
+            </View>
+
+            <View style={styles.detailRow}>
+              <View style={styles.rowLabel}>
+                <Ionicons name="arrow-up" size={18} color="#EF9A9A" />
+                <Text style={[styles.label, styles.rowText]}>Spent</Text>
+              </View>
+              <Text style={[styles.value, styles.spent]}>€{spent.toFixed(2)}</Text>
+            </View>
+
+            <View style={styles.detailRow}>
+              <View style={styles.rowLabel}>
+                <Ionicons name="wallet" size={18} color="#FFFFFF" />
+                <Text style={[styles.label, styles.rowText]}>Balance</Text>
+              </View>
+              <Text style={styles.value}>€{balance.toFixed(2)}</Text>
+            </View>
 
             <TouchableOpacity style={styles.closeButton} onPress={() => setModalVisible(false)}>
               <Text style={styles.closeText}>Close</Text>
@@ -49,21 +80,30 @@ const SummaryCard: React.FC<Props> = ({ transactions }) => {
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: '#2a2a2a',
-    borderRadius: 12,
-    padding: 16,
+    borderRadius: 16,
+    padding: 20,
     marginBottom: 24,
-    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.35,
+    shadowRadius: 6,
+    elevation: 4,
   },
   title: {
     color: '#FFFFFF',
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: '600',
-    marginBottom: 4,
+    marginBottom: 2,
+  },
+  balance: {
+    color: '#FFFFFF',
+    fontSize: 28,
+    fontWeight: 'bold',
+    marginBottom: 2,
   },
   subtitle: {
     color: '#999999',
-    fontSize: 14,
+    fontSize: 12,
   },
   modalOverlay: {
     flex: 1,
@@ -72,9 +112,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   modalContent: {
-    backgroundColor: '#1e1e1e',
+    backgroundColor: '#2a2a2a',
     padding: 24,
-    borderRadius: 16,
+    borderRadius: 20,
     width: '85%',
   },
   modalTitle: {
@@ -87,7 +127,18 @@ const styles = StyleSheet.create({
   detailRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 10,
+    marginBottom: 12,
+    backgroundColor: '#2a2a2a',
+    borderRadius: 10,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+  },
+  rowLabel: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  rowText: {
+    marginLeft: 6,
   },
   label: {
     color: '#CCCCCC',
@@ -105,7 +156,7 @@ const styles = StyleSheet.create({
     color: '#EF9A9A',
   },
   closeButton: {
-    backgroundColor: '#333333',
+    backgroundColor: '#48BF73',
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 8,
@@ -115,6 +166,7 @@ const styles = StyleSheet.create({
   closeText: {
     color: '#FFFFFF',
     fontSize: 14,
+    fontWeight: '600',
   },
 });
 
