@@ -1,10 +1,16 @@
+// [ same imports ]
 import React, { useState } from 'react';
 import { StyleSheet, View, Text, ScrollView, TouchableOpacity, Modal } from 'react-native';
 import { Swipeable } from 'react-native-gesture-handler';
 import { Ionicons } from '@expo/vector-icons';
 import { transactions as initialTransactions, Transaction } from '../../data/transactions';
 
-const CATEGORIES = ['Groceries', 'Bills', 'Investments', 'Savings'];
+const CATEGORIES = [
+  { label: 'Groceries', emoji: '🛒' },
+  { label: 'Bills', emoji: '💡' },
+  { label: 'Investments', emoji: '📈' },
+  { label: 'Savings', emoji: '💰' },
+];
 
 export const TransactionsScreen = () => {
   const [transactionList, setTransactionList] = useState<Transaction[]>(
@@ -21,16 +27,6 @@ export const TransactionsScreen = () => {
     setSelectedTransaction(null);
   };
 
-  const handleArchive = (id: string) => {
-    setTransactionList(prev => {
-      const archived = prev.find(t => t.id === id);
-      if (archived) {
-        setArchivedTransactions(a => [...a, { ...archived, archived: true }]);
-      }
-      return prev.filter(t => t.id !== id);
-    });
-  };
-
   const openModal = (transaction: Transaction) => {
     setSelectedTransaction(transaction);
     setTempCategory(transaction.category);
@@ -39,7 +35,9 @@ export const TransactionsScreen = () => {
   const saveCategory = () => {
     if (!selectedTransaction) return;
     setTransactionList(prev =>
-      prev.map(t => (t.id === selectedTransaction.id ? { ...t, category: tempCategory } : t))
+      prev.map(t =>
+        t.id === selectedTransaction.id ? { ...t, category: tempCategory } : t
+      )
     );
     setSelectedTransaction(null);
   };
@@ -48,21 +46,21 @@ export const TransactionsScreen = () => {
     <View style={styles.container}>
       <ScrollView>
         <Text style={styles.title}>TRANSACTIONS</Text>
-        {CATEGORIES.map(category => {
-          const items = transactionList.filter(t => t.category === category);
+        {CATEGORIES.map(({ label }) => {
+          const items = transactionList.filter(t => t.category === label);
           if (items.length === 0) return null;
           return (
-            <View key={category}>
-              <Text style={styles.categoryHeader}>{category}</Text>
+            <View key={label}>
+              <Text style={styles.categoryHeader}>{label}</Text>
               {items.map(transaction => (
                 <Swipeable
                   key={transaction.id}
                   renderLeftActions={() => (
                     <TouchableOpacity
-                      style={[styles.swipeAction, styles.archiveAction]}
-                      onPress={() => handleArchive(transaction.id)}
+                      style={[styles.swipeAction, styles.modalSwipeAction]}
+                      onPress={() => openModal(transaction)}
                     >
-                      <Ionicons name="archive" size={24} color="#fff" />
+                      <Ionicons name="create-outline" size={24} color="#fff" />
                     </TouchableOpacity>
                   )}
                   renderRightActions={() => (
@@ -115,31 +113,33 @@ export const TransactionsScreen = () => {
           );
         })}
       </ScrollView>
+
       {selectedTransaction && (
         <Modal visible transparent animationType="fade">
           <View style={styles.modalOverlay}>
             <View style={styles.modalContent}>
               <Text style={styles.modalTitle}>{selectedTransaction.counterparty}</Text>
+
               <View style={styles.categorySelect}>
-                {CATEGORIES.map(cat => (
+                {CATEGORIES.map(({ label, emoji }) => (
                   <TouchableOpacity
-                    key={cat}
+                    key={label}
                     style={[
                       styles.categoryOption,
-                      tempCategory === cat && styles.categoryOptionActive,
+                      tempCategory === label && styles.categoryOptionActive,
                     ]}
-                    onPress={() => setTempCategory(cat)}
+                    onPress={() => setTempCategory(label)}
                   >
-                    <Text style={styles.actionText}>{cat}</Text>
+                    <Text style={styles.actionText}>
+                      {emoji} {label}
+                    </Text>
                   </TouchableOpacity>
                 ))}
               </View>
+
               <View style={styles.modalActions}>
                 <TouchableOpacity style={styles.saveButton} onPress={saveCategory}>
                   <Text style={styles.actionText}>Save</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.deleteButton} onPress={() => handleDelete(selectedTransaction.id)}>
-                  <Text style={styles.actionText}>Delete</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.cancelButton} onPress={() => setSelectedTransaction(null)}>
                   <Text style={styles.actionText}>Cancel</Text>
@@ -234,56 +234,13 @@ const styles = StyleSheet.create({
     width: 80,
     marginBottom: 10,
   },
-  archiveAction: {
-    backgroundColor: '#888',
-    borderRadius: 10,
-  },
   deleteAction: {
     backgroundColor: '#FF5555',
     borderRadius: 10,
   },
-  actionContainer: {
-    flexDirection: 'row',
-    marginTop: 10,
-  },
-  actionButton: {
-    backgroundColor: '#444',
-    paddingVertical: 6,
-    paddingHorizontal: 10,
-    borderRadius: 6,
-    marginRight: 8,
-  },
-  saveButton: {
+  modalSwipeAction: {
     backgroundColor: '#66BB6A',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 8,
-    flex: 1,
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 3,
-    elevation: 4,
-  },
-  cancelButton: {
-    backgroundColor: '#888',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 8,
-    flex: 1,
-    alignItems: 'center',
-    elevation: 4,
-  },
-  actionText: {
-    color: '#FFFFFF',
-    fontSize: 14,
-    fontWeight: '600',
-  },
-  editContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: 10,
+    borderRadius: 10,
   },
   modalOverlay: {
     flex: 1,
@@ -294,9 +251,9 @@ const styles = StyleSheet.create({
   modalContent: {
     backgroundColor: '#2a2a2a',
     padding: 25,
-    borderRadius: 20,           // more rounded corners
-    width: '90%',               // wider modal
-    minHeight: 250,             // taller modal
+    borderRadius: 20,
+    width: '90%',
+    minHeight: 250,
     justifyContent: 'center',
   },
   modalTitle: {
@@ -310,15 +267,16 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
-    marginBottom: 10,
+    gap: 10,
   },
   categoryOption: {
     backgroundColor: '#3a3a3a',
-    paddingVertical: 6,
-    paddingHorizontal: 12,
+    paddingVertical: 10,
+    paddingHorizontal: 16,
     borderRadius: 8,
-    marginBottom: 6,
-    marginRight: 6,
+    marginBottom: 10,
+    width: '48%',
+    alignItems: 'center',
   },
   categoryOptionActive: {
     backgroundColor: '#66BB6A',
@@ -326,16 +284,25 @@ const styles = StyleSheet.create({
   modalActions: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    gap: 10,
-    marginTop: 10,
+    marginTop: 25,
   },
-  deleteButton: {
-    backgroundColor: '#FF5555',
+  saveButton: {
+    backgroundColor: '#66BB6A',
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 8,
-    flex: 1,
     alignItems: 'center',
-    elevation: 4,
+  },
+  cancelButton: {
+    backgroundColor: '#888',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  actionText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontWeight: '600',
   },
 });
