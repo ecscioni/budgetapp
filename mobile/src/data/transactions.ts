@@ -15,7 +15,7 @@ export const transactions: Transaction[] = [
   {
     id: '1',
     counterparty: 'John Doe',
-    category: 'School',
+    category: 'Bills',
     description: 'Tuition payment',
     date: '03 jun 2025',
     amount: '-59€',
@@ -25,7 +25,7 @@ export const transactions: Transaction[] = [
   {
     id: '2',
     counterparty: 'Fontys',
-    category: 'Salary',
+    category: 'Savings',
     description: 'Monthly salary',
     date: '02 jun 2025',
     amount: '1000€',
@@ -35,7 +35,7 @@ export const transactions: Transaction[] = [
   {
     id: '3',
     counterparty: 'Alice\'s Coffee',
-    category: 'Coffee',
+    category: 'Groceries',
     description: 'Morning coffee',
     date: '01 jun 2025',
     amount: '-4€',
@@ -45,7 +45,7 @@ export const transactions: Transaction[] = [
   {
     id: '4',
     counterparty: 'Online Store',
-    category: 'Shopping',
+    category: 'Groceries',
     description: 'Online shopping',
     date: '31 may 2025',
     amount: '-79€',
@@ -55,7 +55,7 @@ export const transactions: Transaction[] = [
   {
     id: '5',
     counterparty: 'Freelance Client',
-    category: 'Freelance',
+    category: 'Investments',
     description: 'Invoice payment',
     date: '30 may 2025',
     amount: '450€',
@@ -65,7 +65,7 @@ export const transactions: Transaction[] = [
   {
     id: '6',
     counterparty: 'Gym Co.',
-    category: 'Fitness',
+    category: 'Bills',
     description: 'Gym membership',
     date: '29 may 2025',
     amount: '-35€',
@@ -75,7 +75,7 @@ export const transactions: Transaction[] = [
   {
     id: '7',
     counterparty: 'Spotify',
-    category: 'Entertainment',
+    category: 'Bills',
     description: 'Subscription fee',
     date: '28 may 2025',
     amount: '-10€',
@@ -85,7 +85,7 @@ export const transactions: Transaction[] = [
   {
     id: '8',
     counterparty: 'Electric Co.',
-    category: 'Utilities',
+    category: 'Bills',
     description: 'Electric bill',
     date: '27 may 2025',
     amount: '-60€',

@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, Text, ScrollView, TouchableOpacity, TextInput, Modal } from 'react-native';
+import { StyleSheet, View, Text, ScrollView, TouchableOpacity, Modal } from 'react-native';
 import { Swipeable } from 'react-native-gesture-handler';
 import { Ionicons } from '@expo/vector-icons';
 import { transactions as initialTransactions, Transaction } from '../../data/transactions';
+
+const CATEGORIES = ['Groceries', 'Bills', 'Investments', 'Savings'];
 
 export const TransactionsScreen = () => {
   const [transactionList, setTransactionList] = useState<Transaction[]>(
@@ -46,69 +48,92 @@ export const TransactionsScreen = () => {
     <View style={styles.container}>
       <ScrollView>
         <Text style={styles.title}>TRANSACTIONS</Text>
-        {transactionList.map(transaction => (
-          <Swipeable
-            key={transaction.id}
-            renderLeftActions={() => (
-              <TouchableOpacity
-                style={[styles.swipeAction, styles.archiveAction]}
-                onPress={() => handleArchive(transaction.id)}
-              >
-                <Ionicons name="archive" size={24} color="#fff" />
-              </TouchableOpacity>
-            )}
-            renderRightActions={() => (
-              <TouchableOpacity
-                style={[styles.swipeAction, styles.deleteAction]}
-                onPress={() => handleDelete(transaction.id)}
-              >
-                <Ionicons name="trash" size={24} color="#fff" />
-              </TouchableOpacity>
-            )}
-          >
-            <TouchableOpacity style={styles.transactionItem} onPress={() => openModal(transaction)}>
-              <View
-                style={[
-                  styles.transactionIconContainer,
-                  transaction.type === 'sent' ? styles.sentIcon : styles.receivedIcon,
-                ]}
-              >
-                <Ionicons
-                  name={transaction.type === 'sent' ? 'arrow-up' : 'arrow-down'}
-                  size={20}
-                  color="#FFFFFF"
-                />
-              </View>
-              <View style={styles.transactionDetails}>
-                <Text style={styles.transactionCounterparty}>{transaction.counterparty}</Text>
-                <Text style={styles.transactionDescription}>{transaction.description}</Text>
-                <Text style={styles.transactionCategory}>{transaction.category}</Text>
-                <Text style={styles.transactionDate}>{transaction.date}</Text>
-              </View>
-              <Text
-                style={[
-                  styles.transactionAmount,
-                  transaction.type === 'sent' ? styles.sentAmount : styles.receivedAmount,
-                ]}
-              >
-                {transaction.amount}
-              </Text>
-            </TouchableOpacity>
-          </Swipeable>
-        ))}
+        {CATEGORIES.map(category => {
+          const items = transactionList.filter(t => t.category === category);
+          if (items.length === 0) return null;
+          return (
+            <View key={category}>
+              <Text style={styles.categoryHeader}>{category}</Text>
+              {items.map(transaction => (
+                <Swipeable
+                  key={transaction.id}
+                  renderLeftActions={() => (
+                    <TouchableOpacity
+                      style={[styles.swipeAction, styles.archiveAction]}
+                      onPress={() => handleArchive(transaction.id)}
+                    >
+                      <Ionicons name="archive" size={24} color="#fff" />
+                    </TouchableOpacity>
+                  )}
+                  renderRightActions={() => (
+                    <TouchableOpacity
+                      style={[styles.swipeAction, styles.deleteAction]}
+                      onPress={() => handleDelete(transaction.id)}
+                    >
+                      <Ionicons name="trash" size={24} color="#fff" />
+                    </TouchableOpacity>
+                  )}
+                >
+                  <TouchableOpacity
+                    style={styles.transactionItem}
+                    onPress={() => openModal(transaction)}
+                  >
+                    <View
+                      style={[
+                        styles.transactionIconContainer,
+                        transaction.type === 'sent'
+                          ? styles.sentIcon
+                          : styles.receivedIcon,
+                      ]}
+                    >
+                      <Ionicons
+                        name={transaction.type === 'sent' ? 'arrow-up' : 'arrow-down'}
+                        size={20}
+                        color="#FFFFFF"
+                      />
+                    </View>
+                    <View style={styles.transactionDetails}>
+                      <Text style={styles.transactionCounterparty}>{transaction.counterparty}</Text>
+                      <Text style={styles.transactionDescription}>{transaction.description}</Text>
+                      <Text style={styles.transactionCategory}>{transaction.category}</Text>
+                      <Text style={styles.transactionDate}>{transaction.date}</Text>
+                    </View>
+                    <Text
+                      style={[
+                        styles.transactionAmount,
+                        transaction.type === 'sent'
+                          ? styles.sentAmount
+                          : styles.receivedAmount,
+                      ]}
+                    >
+                      {transaction.amount}
+                    </Text>
+                  </TouchableOpacity>
+                </Swipeable>
+              ))}
+            </View>
+          );
+        })}
       </ScrollView>
       {selectedTransaction && (
         <Modal visible transparent animationType="slide">
           <View style={styles.modalOverlay}>
             <View style={styles.modalContent}>
               <Text style={styles.modalTitle}>{selectedTransaction.counterparty}</Text>
-              <TextInput
-                style={styles.modalInput}
-                value={tempCategory}
-                onChangeText={setTempCategory}
-                placeholder="Category"
-                placeholderTextColor="gray"
-              />
+              <View style={styles.categorySelect}>
+                {CATEGORIES.map(cat => (
+                  <TouchableOpacity
+                    key={cat}
+                    style={[
+                      styles.categoryOption,
+                      tempCategory === cat && styles.categoryOptionActive,
+                    ]}
+                    onPress={() => setTempCategory(cat)}
+                  >
+                    <Text style={styles.actionText}>{cat}</Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
               <View style={styles.modalActions}>
                 <TouchableOpacity style={styles.saveButton} onPress={saveCategory}>
                   <Text style={styles.actionText}>Save</Text>
@@ -141,6 +166,13 @@ const styles = StyleSheet.create({
     color: '#66BB6A',
     textAlign: 'center',
     marginBottom: 20,
+  },
+  categoryHeader: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '600',
+    marginTop: 10,
+    marginBottom: 6,
   },
   transactionItem: {
     flexDirection: 'row',
@@ -253,15 +285,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 10,
   },
-  categoryInput: {
-    flex: 1,
-    backgroundColor: '#3a3a3a',
-    color: '#fff',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 6,
-    marginRight: 8,
-  },
   modalOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0,0,0,0.5)',
@@ -283,16 +306,22 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     textAlign: 'center',
   },
-  modalInput: {
-   backgroundColor: '#3a3a3a',
-    color: '#fff',
-    paddingHorizontal: 12,
-    paddingVertical: 9,
-    borderRadius: 8,
-    fontSize: 16,
-    borderWidth: 1,
-    borderColor: '#555',
+  categorySelect: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
     marginBottom: 10,
+  },
+  categoryOption: {
+    backgroundColor: '#3a3a3a',
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 8,
+    marginBottom: 6,
+    marginRight: 6,
+  },
+  categoryOptionActive: {
+    backgroundColor: '#66BB6A',
   },
   modalActions: {
     flexDirection: 'row',
