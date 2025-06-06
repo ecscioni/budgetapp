@@ -48,7 +48,7 @@ export const TransactionsScreen = () => {
     }, 0);
     return {
       label: total >= 0 ? `Total Gained: €${total}` : `Total Spent: €${Math.abs(total)}`,
-      color: total >= 0 ? '#66BB6A' : '#FF5555',
+      color: total >= 0 ? 'gray' : 'gray',
     };
   };
 
