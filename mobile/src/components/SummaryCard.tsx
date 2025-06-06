@@ -20,6 +20,7 @@ const SummaryCard: React.FC<Props> = ({ transactions }) => {
     .reduce((sum, t: Transaction) => sum + Math.abs(parseFloat(t.amount.replace('€', '').replace(',', '.'))), 0);
 
   const balance = income - spent;
+  const spentPercent = income ? Math.min((spent / income) * 100, 100) : 0;
 
   return (
     <>
@@ -28,12 +29,12 @@ const SummaryCard: React.FC<Props> = ({ transactions }) => {
         activeOpacity={0.9}
       >
         <LinearGradient
-          colors={["#48BF73", "#2E7D32"]}
+          colors={["#343434", "#2a2a2a"]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={styles.card}
         >
-          <Text style={styles.title}>Balance</Text>
+          <Text style={styles.title}>Budget Left</Text>
           <Text style={styles.balance}>€{balance.toFixed(2)}</Text>
           <Text style={styles.subtitle}>Tap for details</Text>
         </LinearGradient>
