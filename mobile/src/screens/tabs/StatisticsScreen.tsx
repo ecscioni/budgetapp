@@ -1,3 +1,4 @@
+// NOTA: Necessário instalar 'react-native-svg-charts' e 'react-native-svg' para este gráfico funcionar
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
@@ -14,14 +15,14 @@ export default function StatisticsScreen() {
         </View>
       </View>
 
-      {/* Gráfico e navegação */}
+      {/* Gráfico e navegação (estrutura básica restaurada) */}
       <View style={styles.chartContainer}>
         <TouchableOpacity>
           <Ionicons name="chevron-back" size={28} color="#3ee06c" />
         </TouchableOpacity>
-        <View style={styles.chartCircle}>
-          <Text style={styles.chartLabel}>May 2021</Text>
-          <Text style={styles.chartValue}>-38%</Text>
+        <View style={styles.chartCirclePlaceholder}>
+          <Text style={styles.chartLabelPlaceholder}>May 2021</Text>
+          <Text style={styles.chartValuePlaceholder}>-38%</Text>
         </View>
         <TouchableOpacity>
           <Ionicons name="chevron-forward" size={28} color="#3ee06c" />
@@ -30,19 +31,19 @@ export default function StatisticsScreen() {
 
       {/* Categorias */}
       <View style={styles.categoriesRow}>
-        <View style={styles.categoryCard}>
+        <View style={[styles.categoryCard, { backgroundColor: '#3ee06c' }]}> 
           <Text style={styles.categoryTitle}>Food expenses</Text>
           <Text style={styles.categoryValue}>20%</Text>
         </View>
-        <View style={styles.categoryCard}>
+        <View style={[styles.categoryCard, { backgroundColor: '#66BB6A' }]}> 
           <Text style={styles.categoryTitle}>Transportation</Text>
           <Text style={styles.categoryValue}>-6%</Text>
         </View>
-        <View style={styles.categoryCard}>
+        <View style={[styles.categoryCard, { backgroundColor: '#4ADE80' }]}> 
           <Text style={styles.categoryTitle}>Light bill</Text>
           <Text style={styles.categoryValue}>-4%</Text>
         </View>
-        <View style={styles.categoryCard}>
+        <View style={[styles.categoryCard, { backgroundColor: '#2563EB' }]}> 
           <Text style={styles.categoryTitle}>Fun expenses</Text>
           <Text style={styles.categoryValue}>-8%</Text>
         </View>
@@ -82,7 +83,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginVertical: 32,
   },
-  chartCircle: {
+  chartCirclePlaceholder: {
     width: 180,
     height: 180,
     borderRadius: 90,
@@ -93,11 +94,11 @@ const styles = StyleSheet.create({
     backgroundColor: '#232323',
     marginHorizontal: 16,
   },
-  chartLabel: {
+  chartLabelPlaceholder: {
     color: '#fff',
     fontSize: 18,
   },
-  chartValue: {
+  chartValuePlaceholder: {
     color: '#3ee06c',
     fontSize: 32,
     fontWeight: 'bold',
@@ -108,7 +109,6 @@ const styles = StyleSheet.create({
     marginVertical: 24,
   },
   categoryCard: {
-    backgroundColor: '#292929',
     borderRadius: 16,
     paddingVertical: 12,
     paddingHorizontal: 8,
@@ -116,7 +116,7 @@ const styles = StyleSheet.create({
     width: 80,
   },
   categoryTitle: {
-    color: '#3ee06c',
+    color: '#fff',
     fontSize: 12,
     marginBottom: 4,
     textAlign: 'center',
