@@ -17,6 +17,11 @@ export const ProfileScreen = () => {
       <TouchableOpacity style={styles.itemBox} onPress={() => console.log('Notifications pressed')}>
         <Text style={styles.option}>Notifications & offers</Text>
       </TouchableOpacity>
+      <TouchableOpacity style={styles.itemBox} onPress={() => console.log('Notifications pressed')}>
+        <Text style={styles.option}>Manage goals</Text>
+      </TouchableOpacity>
+
+
       <TouchableOpacity style={styles.logOutBox}>
         <Text style={styles.option}>Logout</Text>
       </TouchableOpacity>
