@@ -3,8 +3,10 @@ import { StyleSheet, View, Text, ScrollView, TouchableOpacity, Image } from 'rea
 import { Ionicons } from '@expo/vector-icons';
 import { transactions } from '../../data/transactions';
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { CompositeNavigationProp } from '@react-navigation/native';
 
-//  Define tab names and types
+// Define tab names and types
 type TabParamList = {
   Home: undefined;
   Transactions: undefined;
@@ -13,13 +15,21 @@ type TabParamList = {
   Profile: undefined;
 };
 
-// Define the prop type for navigation
-type HomeScreenProps = {
-  navigation: BottomTabNavigationProp<TabParamList, 'Home'>;
+// Define stack names and types
+type RootStackParamList = {
+  Budget: undefined;
+  Goals: undefined;
+  More: undefined;
 };
 
+// Define the prop type for navigation
+type HomeScreenProps = CompositeNavigationProp<
+  BottomTabNavigationProp<TabParamList, 'Home'>,
+  NativeStackNavigationProp<RootStackParamList>
+>;
+
 // Main HomeScreen component
-export const HomeScreen = ({ navigation }: HomeScreenProps) => {
+const HomeScreen = ({ navigation }: { navigation: HomeScreenProps }) => {
   return (
     <ScrollView style={styles.container}>
       {/* Header */}
@@ -42,19 +52,21 @@ export const HomeScreen = ({ navigation }: HomeScreenProps) => {
 
       {/* Quick Action Buttons */}
       <View style={styles.buttonsSection}>
-        <TouchableOpacity style={styles.button} onPress={() => {}}>
+        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Budget')}>
           <View style={styles.buttonIconContainer}>
             <Ionicons name="cash-outline" size={24} color="#4CAF50" />
           </View>
-          <Text style={styles.buttonText}>Quick Transfer</Text>
+          <Text style={styles.buttonText}>Create budget</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.button} onPress={() => {}}>
+
+        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Goals')}>
           <View style={styles.buttonIconContainer}>
             <Ionicons name="repeat" size={24} color="#4CAF50" />
           </View>
-          <Text style={styles.buttonText}>New Transaction</Text>
+          <Text style={styles.buttonText}>Add goals</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.button} onPress={() => {}}>
+
+        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('More')}>
           <View style={styles.buttonIconContainer}>
             <Ionicons name="grid-outline" size={24} color="#4CAF50" />
           </View>
@@ -107,6 +119,9 @@ export const HomeScreen = ({ navigation }: HomeScreenProps) => {
     </ScrollView>
   );
 };
+
+export default HomeScreen;
+
 
 // Styles
 const styles = StyleSheet.create({
