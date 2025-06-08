@@ -13,7 +13,7 @@ import { ProfileScreen } from './src/screens/tabs/ProfileScreen';
 import { InicialScreen } from './src/screens/tabs/InicialScreen';
 import { LoginScreen } from './src/screens/auth/LoginScreen';
 import { RegisterScreen } from './src/screens/auth/RegisterScreen';
-import { BudgetScreen } from '@/screens/tabs/BudgetScreen';
+import  {BudgetScreen}  from '@/screens/tabs/BudgetScreen';
 import { GoalScreen } from './src/screens/tabs/GoalScreen';
 import { MoreScreen } from './src/screens/tabs/MoreScreen';
 
