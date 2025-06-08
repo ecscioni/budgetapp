@@ -5,7 +5,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Ionicons } from '@expo/vector-icons';
-import { HomeScreen } from './src/screens/tabs/HomeScreen';
+import HomeScreen from './src/screens/tabs/HomeScreen';
 import { TransactionsScreen } from './src/screens/tabs/TransactionsScreen';
 import { CardsScreen } from './src/screens/tabs/CardsScreen';
 import StatisticsScreen from './src/screens/tabs/StatisticsScreen';
@@ -13,6 +13,11 @@ import { ProfileScreen } from './src/screens/tabs/ProfileScreen';
 import { InicialScreen } from './src/screens/tabs/InicialScreen';
 import { LoginScreen } from './src/screens/auth/LoginScreen';
 import { RegisterScreen } from './src/screens/auth/RegisterScreen';
+import { BudgetScreen } from '@/screens/tabs/BudgetScreen';
+import { GoalScreen } from './src/screens/tabs/GoalScreen';
+import { MoreScreen } from './src/screens/tabs/MoreScreen';
+
+
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -78,6 +83,9 @@ export default function App() {
             <Stack.Screen name="Login" component={LoginScreen} />
             <Stack.Screen name="Register" component={RegisterScreen} />
             <Stack.Screen name="MainApp" component={TabNavigator} />
+            <Stack.Screen name='Budget' component={BudgetScreen}/>
+            <Stack.Screen name='Goals'  component={GoalScreen}/>
+            <Stack.Screen name='More'  component={MoreScreen}/>
           </Stack.Navigator>
         </NavigationContainer>
       </View>
