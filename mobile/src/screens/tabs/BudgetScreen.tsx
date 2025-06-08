@@ -6,6 +6,7 @@ export const BudgetScreen = () => {
     <View style={styles.container}>
       <Text style={styles.title}>
         Create budget
+             
       </Text>
     </View>
   );
