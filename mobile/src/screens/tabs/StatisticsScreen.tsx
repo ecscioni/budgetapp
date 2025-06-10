@@ -1,6 +1,6 @@
+// NOTA: Necessário instalar 'react-native-svg-charts' e 'react-native-svg' para este gráfico funcionar
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
-import { PieChart } from 'react-native-chart-kit';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
 export default function StatisticsScreen() {
@@ -15,22 +15,6 @@ export default function StatisticsScreen() {
 
   const selected = categories[selectedIndex];
 
-  const screenWidth = Dimensions.get('window').width;
-  const chartData = categories.map((cat) => ({
-    name: cat.label,
-    population: Math.abs(cat.value),
-    color: cat.color,
-    legendFontColor: '#FFFFFF',
-    legendFontSize: 12,
-  }));
-
-  const chartConfig = {
-    backgroundGradientFrom: '#232323',
-    backgroundGradientTo: '#232323',
-    color: () => '#3ee06c',
-    labelColor: () => '#fff',
-  };
-
   return (
     <View style={styles.container}>
       {/* Header */}
@@ -42,27 +26,16 @@ export default function StatisticsScreen() {
         </View>
       </View>
 
-      {/* Chart with navigation */}
+      {/* Gráfico e navegação (estrutura básica restaurada) */}
       <View style={styles.chartContainer}>
         <TouchableOpacity>
           <Ionicons name="chevron-back" size={28} color="#3ee06c" />
         </TouchableOpacity>
-        <View style={styles.chartWrapper}>
-          <PieChart
-            data={chartData}
-            width={screenWidth * 0.6}
-            height={180}
-            accessor="population"
-            chartConfig={chartConfig}
-            backgroundColor="transparent"
-            hasLegend={false}
-          />
-          <View style={styles.chartCenter} pointerEvents="none">
-            <Text style={styles.chartLabel}>{selected.label}</Text>
-            <Text style={styles.chartValue}>
-              {selected.value > 0 ? `+${selected.value}%` : `${selected.value}%`}
-            </Text>
-          </View>
+        <View style={styles.chartCirclePlaceholder}>
+          <Text style={styles.chartLabelPlaceholder}>{selected.label}</Text>
+          <Text style={styles.chartValuePlaceholder}>{
+            selected.value > 0 ? `+${selected.value}%` : `${selected.value}%`
+          }</Text>
         </View>
         <TouchableOpacity>
           <Ionicons name="chevron-forward" size={28} color="#3ee06c" />
@@ -123,29 +96,22 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginVertical: 32,
   },
-  chartWrapper: {
+  chartCirclePlaceholder: {
     width: 180,
     height: 180,
     borderRadius: 90,
     borderWidth: 12,
     borderColor: '#191919',
-    overflow: 'hidden',
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: '#232323',
     marginHorizontal: 16,
   },
-  chartCenter: {
-    position: 'absolute',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  chartLabel: {
+  chartLabelPlaceholder: {
     color: '#fff',
     fontSize: 18,
-    textAlign: 'center',
   },
-  chartValue: {
+  chartValuePlaceholder: {
     color: '#3ee06c',
     fontSize: 32,
     fontWeight: 'bold',
@@ -163,8 +129,8 @@ const styles = StyleSheet.create({
     width: 80,
   },
   activeCategory: {
-    borderWidth: 1,
-    borderColor: '#4ADE80',
+    borderWidth: 2,
+    borderColor: '#FFFFFF',
   },
   categoryTitle: {
     color: '#fff',
