@@ -69,7 +69,7 @@ const styles = StyleSheet.create({
     bottom: 25,
     left: 30,
     color: '#fff',
-    fontSize: 20,
+    fontSize: 18,
     fontFamily: 'GemunuLibre-ExtraLight',
     fontWeight: 'bold',
     letterSpacing: 1.5,

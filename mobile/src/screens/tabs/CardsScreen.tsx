@@ -36,9 +36,9 @@ const initialCards: Card[] = [
   },
 ];
 
-const CARD_WIDTH = Dimensions.get('window').width - 30;
-const SNAP_INTERVAL = CARD_WIDTH;
 const SCREEN_WIDTH = Dimensions.get('window').width;
+const CARD_WIDTH = SCREEN_WIDTH - 30;
+const SNAP_INTERVAL = SCREEN_WIDTH;
 
 export const CardsScreen = () => {
   const [cards, setCards] = useState(initialCards);
