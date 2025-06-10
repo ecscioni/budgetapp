@@ -129,8 +129,8 @@ const styles = StyleSheet.create({
     width: 80,
   },
   activeCategory: {
-    borderWidth: 2,
-    borderColor: '#FFFFFF',
+    borderWidth: 1,
+    borderColor: '#4ADE80',
   },
   categoryTitle: {
     color: '#fff',
