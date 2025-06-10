@@ -49,8 +49,8 @@ export default function StatisticsScreen() {
         </TouchableOpacity>
         <PieChart
           data={chartData}
-          width={Dimensions.get('window').width - 160}
-          height={180}
+          width={Dimensions.get('window').width - 90}
+          height={200}
           chartConfig={{ color: () => '#fff' }}
           accessor="population"
           backgroundColor="transparent"
