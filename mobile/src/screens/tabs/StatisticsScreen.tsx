@@ -1,9 +1,36 @@
 // NOTA: Necessário instalar 'react-native-svg-charts' e 'react-native-svg' para este gráfico funcionar
-import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import React, { useState } from 'react';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  Dimensions,
+} from 'react-native';
+import { PieChart } from 'react-native-chart-kit';
+import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 
 export default function StatisticsScreen() {
+  const categories = [
+    { label: 'Food expenses', value: 20, color: '#10B981' },
+    { label: 'Transportation', value: 6, color: '#60A5FA' },
+    { label: 'Light bill', value: 4, color: '#F59E0B' },
+    { label: 'Fun expenses', value: 8, color: '#EF4444' },
+  ];
+
+  const [selectedIndex, setSelectedIndex] = useState(0);
+
+  const selected = categories[selectedIndex];
+
+  const chartData = categories.map(cat => ({
+    name: cat.label,
+    population: cat.value,
+    color: cat.color,
+    legendFontColor: '#fff',
+    legendFontSize: 12,
+  }));
+
   return (
     <View style={styles.container}>
       {/* Header */}
@@ -20,33 +47,54 @@ export default function StatisticsScreen() {
         <TouchableOpacity>
           <Ionicons name="chevron-back" size={28} color="#3ee06c" />
         </TouchableOpacity>
-        <View style={styles.chartCirclePlaceholder}>
-          <Text style={styles.chartLabelPlaceholder}>May 2021</Text>
-          <Text style={styles.chartValuePlaceholder}>-38%</Text>
-        </View>
-        <TouchableOpacity>
+        <PieChart
+          data={chartData}
+          width={Dimensions.get('window').width - 90}
+          height={200}
+          chartConfig={{ color: () => '#fff' }}
+          accessor="population"
+          backgroundColor="transparent"
+          paddingLeft="0"
+          center={[0, 0]}
+          hasLegend={false}
+          style={styles.chart}
+        />
+        <TouchableOpacity style={styles.navButtonRight}>
           <Ionicons name="chevron-forward" size={28} color="#3ee06c" />
         </TouchableOpacity>
       </View>
+      <View style={styles.chartInfo}>
+        <Text style={styles.chartLabel}>{selected.label}</Text>
+        <Text style={styles.chartValue}>
+          {selected.value > 0 ? `+${selected.value}%` : `${selected.value}%`}
+        </Text>
+      </View>
 
-      {/* Categorias */}
-      <View style={styles.categoriesRow}>
-        <View style={[styles.categoryCard, { backgroundColor: '#3ee06c' }]}> 
-          <Text style={styles.categoryTitle}>Food expenses</Text>
-          <Text style={styles.categoryValue}>20%</Text>
-        </View>
-        <View style={[styles.categoryCard, { backgroundColor: '#66BB6A' }]}> 
-          <Text style={styles.categoryTitle}>Transportation</Text>
-          <Text style={styles.categoryValue}>-6%</Text>
-        </View>
-        <View style={[styles.categoryCard, { backgroundColor: '#4ADE80' }]}> 
-          <Text style={styles.categoryTitle}>Light bill</Text>
-          <Text style={styles.categoryValue}>-4%</Text>
-        </View>
-        <View style={[styles.categoryCard, { backgroundColor: '#2563EB' }]}> 
-          <Text style={styles.categoryTitle}>Fun expenses</Text>
-          <Text style={styles.categoryValue}>-8%</Text>
-        </View>
+      <View style={styles.categoriesContainer}>
+        {categories.map((cat, index) => (
+          <TouchableOpacity
+            key={cat.label}
+            style={styles.categoryBlock}
+            onPress={() => setSelectedIndex(index)}
+          >
+            <LinearGradient
+              colors={["#4ADE80", "#2C9C55"]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={[
+                styles.gradientBlock,
+                index === selectedIndex && styles.activeGradientBlock,
+              ]}
+            >
+              <Text style={styles.categoryLabel}>{cat.label}</Text>
+              {index === selectedIndex && (
+                <Text style={styles.categoryValue}>
+                  {cat.value > 0 ? `+${cat.value}%` : `${cat.value}%`}
+                </Text>
+              )}
+            </LinearGradient>
+          </TouchableOpacity>
+        ))}
       </View>
     </View>
   );
@@ -80,50 +128,70 @@ const styles = StyleSheet.create({
   chartContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    marginVertical: 32,
+    marginVertical: 20,
+    alignSelf: 'center',
   },
-  chartCirclePlaceholder: {
-    width: 180,
-    height: 180,
-    borderRadius: 90,
-    borderWidth: 12,
-    borderColor: '#191919',
+  chart: {
+    marginHorizontal: 10,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#232323',
-    marginHorizontal: 16,
+    alignSelf: 'center',
+    borderRadius: 10,
   },
-  chartLabelPlaceholder: {
+  chartInfo: {
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  chartLabel: {
     color: '#fff',
     fontSize: 18,
+    marginBottom: 4,
   },
-  chartValuePlaceholder: {
+  chartValue: {
     color: '#3ee06c',
     fontSize: 32,
     fontWeight: 'bold',
   },
-  categoriesRow: {
+  categoriesContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
-    marginVertical: 24,
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
   },
-  categoryCard: {
-    borderRadius: 16,
-    paddingVertical: 12,
-    paddingHorizontal: 8,
+  categoryBlock: {
+    width: '48%',
+    marginBottom: 12,
+  },
+  gradientBlock: {
+    borderRadius: 10,
+    paddingVertical: 16,
+    paddingHorizontal: 12,
     alignItems: 'center',
-    width: 80,
+    justifyContent: 'center',
   },
-  categoryTitle: {
+  activeGradientBlock: {
+    borderWidth: 2,
+    borderColor: '#FFFFFF55',
+  },
+  categoryLabel: {
     color: '#fff',
-    fontSize: 12,
-    marginBottom: 4,
     textAlign: 'center',
+    fontSize: 14,
   },
   categoryValue: {
     color: '#fff',
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: 'bold',
+    marginTop: 4,
+  },
+    navButtonLeft: {
+    position: 'absolute',
+    left: 0,
+    padding: 8,
+  },
+  navButtonRight: {
+    position: 'absolute',
+    right: 0,
+    padding: 8,
   },
 });
