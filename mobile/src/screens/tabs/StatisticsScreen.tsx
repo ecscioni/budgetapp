@@ -1,19 +1,29 @@
 // NOTA: Necessário instalar 'react-native-svg-charts' e 'react-native-svg' para este gráfico funcionar
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
+import { PieChart } from 'react-native-chart-kit';
+import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 
 export default function StatisticsScreen() {
   const categories = [
     { label: 'Food expenses', value: 20, color: '#3ee06c' },
-    { label: 'Transportation', value: -6, color: '#66BB6A' },
-    { label: 'Light bill', value: -4, color: '#4ADE80' },
-    { label: 'Fun expenses', value: -8, color: '#2563EB' },
+    { label: 'Transportation', value: 6, color: '#66BB6A' },
+    { label: 'Light bill', value: 4, color: '#4ADE80' },
+    { label: 'Fun expenses', value: 8, color: '#2563EB' },
   ];
 
   const [selectedIndex, setSelectedIndex] = useState(0);
 
   const selected = categories[selectedIndex];
+
+  const chartData = categories.map(cat => ({
+    name: cat.label,
+    population: cat.value,
+    color: cat.color,
+    legendFontColor: '#fff',
+    legendFontSize: 12,
+  }));
 
   return (
     <View style={styles.container}>
@@ -31,31 +41,42 @@ export default function StatisticsScreen() {
         <TouchableOpacity>
           <Ionicons name="chevron-back" size={28} color="#3ee06c" />
         </TouchableOpacity>
-        <View style={styles.chartCirclePlaceholder}>
-          <Text style={styles.chartLabelPlaceholder}>{selected.label}</Text>
-          <Text style={styles.chartValuePlaceholder}>{
-            selected.value > 0 ? `+${selected.value}%` : `${selected.value}%`
-          }</Text>
-        </View>
+        <PieChart
+          data={chartData}
+          width={Dimensions.get('window').width - 160}
+          height={180}
+          chartConfig={{ color: () => '#fff' }}
+          accessor="population"
+          backgroundColor="transparent"
+          paddingLeft="0"
+          center={[0, 0]}
+          hasLegend={false}
+          style={styles.chart}
+        />
         <TouchableOpacity>
           <Ionicons name="chevron-forward" size={28} color="#3ee06c" />
         </TouchableOpacity>
       </View>
+      <View style={styles.chartInfo}>
+        <Text style={styles.chartLabel}>{selected.label}</Text>
+        <Text style={styles.chartValue}>
+          {selected.value > 0 ? `+${selected.value}%` : `${selected.value}%`}
+        </Text>
+      </View>
 
-      {/* Categorias */}
-      <View style={styles.categoriesRow}>
+      <View style={styles.legend}>
         {categories.map((cat, index) => (
           <TouchableOpacity
             key={cat.label}
             style={[
-              styles.categoryCard,
-              { backgroundColor: cat.color },
-              index === selectedIndex && styles.activeCategory,
+              styles.legendItem,
+              index === selectedIndex && styles.activeLegendItem,
             ]}
             onPress={() => setSelectedIndex(index)}
           >
-            <Text style={styles.categoryTitle}>{cat.label}</Text>
-            <Text style={styles.categoryValue}>
+            <View style={[styles.legendColor, { backgroundColor: cat.color }]} />
+            <Text style={styles.legendLabel}>{cat.label}</Text>
+            <Text style={styles.legendValue}>
               {cat.value > 0 ? `+${cat.value}%` : `${cat.value}%`}
             </Text>
           </TouchableOpacity>
@@ -96,51 +117,51 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginVertical: 32,
   },
-  chartCirclePlaceholder: {
-    width: 180,
-    height: 180,
-    borderRadius: 90,
-    borderWidth: 12,
-    borderColor: '#191919',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#232323',
+  chart: {
     marginHorizontal: 16,
   },
-  chartLabelPlaceholder: {
+  chartInfo: {
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  chartLabel: {
     color: '#fff',
     fontSize: 18,
+    marginBottom: 4,
   },
-  chartValuePlaceholder: {
+  chartValue: {
     color: '#3ee06c',
     fontSize: 32,
     fontWeight: 'bold',
   },
-  categoriesRow: {
+  legend: {
+    paddingHorizontal: 20,
+  },
+  legendItem: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
-    marginVertical: 24,
-  },
-  categoryCard: {
-    borderRadius: 16,
-    paddingVertical: 12,
-    paddingHorizontal: 8,
     alignItems: 'center',
-    width: 80,
+    justifyContent: 'space-between',
+    paddingVertical: 8,
   },
-  activeCategory: {
-    borderWidth: 2,
-    borderColor: '#FFFFFF',
+  activeLegendItem: {
+    backgroundColor: '#2a2a2a',
+    borderRadius: 10,
+    paddingHorizontal: 10,
   },
-  categoryTitle: {
+  legendColor: {
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+    marginRight: 8,
+  },
+  legendLabel: {
     color: '#fff',
-    fontSize: 12,
-    marginBottom: 4,
-    textAlign: 'center',
+    flex: 1,
+    fontSize: 14,
   },
-  categoryValue: {
+  legendValue: {
     color: '#fff',
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: 'bold',
   },
 });
