@@ -1,6 +1,12 @@
 // NOTA: Necessário instalar 'react-native-svg-charts' e 'react-native-svg' para este gráfico funcionar
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  Dimensions,
+} from 'react-native';
 import { PieChart } from 'react-native-chart-kit';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
@@ -64,21 +70,29 @@ export default function StatisticsScreen() {
         </Text>
       </View>
 
-      <View style={styles.legend}>
+      <View style={styles.categoriesContainer}>
         {categories.map((cat, index) => (
           <TouchableOpacity
             key={cat.label}
-            style={[
-              styles.legendItem,
-              index === selectedIndex && styles.activeLegendItem,
-            ]}
+            style={styles.categoryBlock}
             onPress={() => setSelectedIndex(index)}
           >
-            <View style={[styles.legendColor, { backgroundColor: cat.color }]} />
-            <Text style={styles.legendLabel}>{cat.label}</Text>
-            <Text style={styles.legendValue}>
-              {cat.value > 0 ? `+${cat.value}%` : `${cat.value}%`}
-            </Text>
+            <LinearGradient
+              colors={["#4ADE80", "#2C9C55"]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={[
+                styles.gradientBlock,
+                index === selectedIndex && styles.activeGradientBlock,
+              ]}
+            >
+              <Text style={styles.categoryLabel}>{cat.label}</Text>
+              {index === selectedIndex && (
+                <Text style={styles.categoryValue}>
+                  {cat.value > 0 ? `+${cat.value}%` : `${cat.value}%`}
+                </Text>
+              )}
+            </LinearGradient>
           </TouchableOpacity>
         ))}
       </View>
@@ -134,34 +148,36 @@ const styles = StyleSheet.create({
     fontSize: 32,
     fontWeight: 'bold',
   },
-  legend: {
+  categoriesContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
     paddingHorizontal: 20,
   },
-  legendItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingVertical: 8,
+  categoryBlock: {
+    width: '48%',
+    marginBottom: 12,
   },
-  activeLegendItem: {
-    backgroundColor: '#2a2a2a',
+  gradientBlock: {
     borderRadius: 10,
-    paddingHorizontal: 10,
+    paddingVertical: 16,
+    paddingHorizontal: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  legendColor: {
-    width: 12,
-    height: 12,
-    borderRadius: 6,
-    marginRight: 8,
+  activeGradientBlock: {
+    borderWidth: 2,
+    borderColor: '#FFFFFF55',
   },
-  legendLabel: {
+  categoryLabel: {
     color: '#fff',
-    flex: 1,
+    textAlign: 'center',
     fontSize: 14,
   },
-  legendValue: {
+  categoryValue: {
     color: '#fff',
-    fontSize: 14,
+    fontSize: 18,
     fontWeight: 'bold',
+    marginTop: 4,
   },
 });
