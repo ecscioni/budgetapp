@@ -13,10 +13,10 @@ import { Ionicons } from '@expo/vector-icons';
 
 export default function StatisticsScreen() {
   const categories = [
-    { label: 'Food expenses', value: 20, color: '#3ee06c' },
-    { label: 'Transportation', value: 6, color: '#66BB6A' },
-    { label: 'Light bill', value: 4, color: '#4ADE80' },
-    { label: 'Fun expenses', value: 8, color: '#2563EB' },
+    { label: 'Food expenses', value: 20, color: '#10B981' },
+    { label: 'Transportation', value: 6, color: '#60A5FA' },
+    { label: 'Light bill', value: 4, color: '#F59E0B' },
+    { label: 'Fun expenses', value: 8, color: '#EF4444' },
   ];
 
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -59,7 +59,7 @@ export default function StatisticsScreen() {
           hasLegend={false}
           style={styles.chart}
         />
-        <TouchableOpacity>
+        <TouchableOpacity style={styles.navButtonRight}>
           <Ionicons name="chevron-forward" size={28} color="#3ee06c" />
         </TouchableOpacity>
       </View>
@@ -128,11 +128,15 @@ const styles = StyleSheet.create({
   chartContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    marginVertical: 32,
+    marginVertical: 20,
+    alignSelf: 'center',
   },
   chart: {
-    marginHorizontal: 16,
+    marginHorizontal: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    alignSelf: 'center',
+    borderRadius: 10,
   },
   chartInfo: {
     alignItems: 'center',
@@ -179,5 +183,15 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     marginTop: 4,
+  },
+    navButtonLeft: {
+    position: 'absolute',
+    left: 0,
+    padding: 8,
+  },
+  navButtonRight: {
+    position: 'absolute',
+    right: 0,
+    padding: 8,
   },
 });
