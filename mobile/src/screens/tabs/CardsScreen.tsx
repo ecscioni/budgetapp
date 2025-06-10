@@ -74,7 +74,7 @@ export const CardsScreen = () => {
       last4: cleanedCardNumber.slice(-4), // Usar o número limpo para os últimos 4 dígitos
       expiry: newExpiry,
       cvc: newCvc,
-      imageUrl: 'https://imgur.com/3u4JHkm.png', // Default image
+      isAddCard: false, // Alterado para false
     };
 
     setCards(prevCards => [...prevCards.slice(0, -1), newCard, prevCards[prevCards.length - 1]]);
