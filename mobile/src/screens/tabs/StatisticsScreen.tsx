@@ -1,8 +1,6 @@
-// NOTA: Necessário instalar 'react-native-svg-charts' e 'react-native-svg' para este gráfico funcionar
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { PieChart } from 'react-native-svg-charts';
-import { Circle } from 'react-native-svg';
+import { View, Text, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
+import { PieChart } from 'react-native-chart-kit';
 import { Ionicons } from '@expo/vector-icons';
 
 export default function StatisticsScreen() {
@@ -17,18 +15,21 @@ export default function StatisticsScreen() {
 
   const selected = categories[selectedIndex];
 
-  const pieData = categories.map((cat, index) => ({
-    key: cat.label,
-    value: Math.abs(cat.value),
-    svg: {
-      fill: cat.color,
-      onPress: () => setSelectedIndex(index),
-    },
-    arc: {
-      outerRadius: index === selectedIndex ? '105%' : '100%',
-      padAngle: 0.02,
-    },
+  const screenWidth = Dimensions.get('window').width;
+  const chartData = categories.map((cat) => ({
+    name: cat.label,
+    population: Math.abs(cat.value),
+    color: cat.color,
+    legendFontColor: '#FFFFFF',
+    legendFontSize: 12,
   }));
+
+  const chartConfig = {
+    backgroundGradientFrom: '#232323',
+    backgroundGradientTo: '#232323',
+    color: () => '#3ee06c',
+    labelColor: () => '#fff',
+  };
 
   return (
     <View style={styles.container}>
@@ -47,7 +48,15 @@ export default function StatisticsScreen() {
           <Ionicons name="chevron-back" size={28} color="#3ee06c" />
         </TouchableOpacity>
         <View style={styles.chartWrapper}>
-          <PieChart style={styles.chart} data={pieData} innerRadius={70} />
+          <PieChart
+            data={chartData}
+            width={screenWidth * 0.6}
+            height={180}
+            accessor="population"
+            chartConfig={chartConfig}
+            backgroundColor="transparent"
+            hasLegend={false}
+          />
           <View style={styles.chartCenter} pointerEvents="none">
             <Text style={styles.chartLabel}>{selected.label}</Text>
             <Text style={styles.chartValue}>
@@ -125,10 +134,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: '#232323',
     marginHorizontal: 16,
-  },
-  chart: {
-    height: 180,
-    width: 180,
   },
   chartCenter: {
     position: 'absolute',
