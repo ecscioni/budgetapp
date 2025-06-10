@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { StyleSheet, View, Text, Platform } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -16,8 +16,8 @@ import { RegisterScreen } from './src/screens/auth/RegisterScreen';
 import  {BudgetScreen}  from '@/screens/tabs/BudgetScreen';
 import { GoalScreen } from './src/screens/tabs/GoalScreen';
 import { MoreScreen } from './src/screens/tabs/MoreScreen';
-
-
+import * as SplashScreen from 'expo-splash-screen';
+import { useFonts } from 'expo-font';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -74,9 +74,34 @@ const TabNavigator = () => {
 };
 
 export default function App() {
+  const [fontsLoaded] = useFonts({
+    'GemunuLibre-ExtraLight': require('./assets/fonts/GemunuLibre-ExtraLight.ttf'),
+  });
+
+  useEffect(() => {
+    async function prepare() {
+      try {
+        await SplashScreen.preventAutoHideAsync();
+      } catch (e) {
+        console.warn(e);
+      }
+    }
+    prepare();
+  }, []);
+
+  const onLayoutRootView = useCallback(async () => {
+    if (fontsLoaded) {
+      await SplashScreen.hideAsync();
+    }
+  }, [fontsLoaded]);
+
+  if (!fontsLoaded) {
+    return null;
+  }
+
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <View style={styles.container}>
+      <View style={styles.container} onLayout={onLayoutRootView}>
         <NavigationContainer>
           <Stack.Navigator screenOptions={{ headerShown: false }}>
             <Stack.Screen name="Inicial" component={InicialScreen} />
