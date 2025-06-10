@@ -1,6 +1,8 @@
 // NOTA: Necessário instalar 'react-native-svg-charts' e 'react-native-svg' para este gráfico funcionar
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { PieChart } from 'react-native-svg-charts';
+import { Circle } from 'react-native-svg';
 import { Ionicons } from '@expo/vector-icons';
 
 export default function StatisticsScreen() {
@@ -15,6 +17,19 @@ export default function StatisticsScreen() {
 
   const selected = categories[selectedIndex];
 
+  const pieData = categories.map((cat, index) => ({
+    key: cat.label,
+    value: Math.abs(cat.value),
+    svg: {
+      fill: cat.color,
+      onPress: () => setSelectedIndex(index),
+    },
+    arc: {
+      outerRadius: index === selectedIndex ? '105%' : '100%',
+      padAngle: 0.02,
+    },
+  }));
+
   return (
     <View style={styles.container}>
       {/* Header */}
@@ -26,16 +41,19 @@ export default function StatisticsScreen() {
         </View>
       </View>
 
-      {/* Gráfico e navegação (estrutura básica restaurada) */}
+      {/* Chart with navigation */}
       <View style={styles.chartContainer}>
         <TouchableOpacity>
           <Ionicons name="chevron-back" size={28} color="#3ee06c" />
         </TouchableOpacity>
-        <View style={styles.chartCirclePlaceholder}>
-          <Text style={styles.chartLabelPlaceholder}>{selected.label}</Text>
-          <Text style={styles.chartValuePlaceholder}>{
-            selected.value > 0 ? `+${selected.value}%` : `${selected.value}%`
-          }</Text>
+        <View style={styles.chartWrapper}>
+          <PieChart style={styles.chart} data={pieData} innerRadius={70} />
+          <View style={styles.chartCenter} pointerEvents="none">
+            <Text style={styles.chartLabel}>{selected.label}</Text>
+            <Text style={styles.chartValue}>
+              {selected.value > 0 ? `+${selected.value}%` : `${selected.value}%`}
+            </Text>
+          </View>
         </View>
         <TouchableOpacity>
           <Ionicons name="chevron-forward" size={28} color="#3ee06c" />
@@ -96,22 +114,33 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginVertical: 32,
   },
-  chartCirclePlaceholder: {
+  chartWrapper: {
     width: 180,
     height: 180,
     borderRadius: 90,
     borderWidth: 12,
     borderColor: '#191919',
+    overflow: 'hidden',
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: '#232323',
     marginHorizontal: 16,
   },
-  chartLabelPlaceholder: {
+  chart: {
+    height: 180,
+    width: 180,
+  },
+  chartCenter: {
+    position: 'absolute',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  chartLabel: {
     color: '#fff',
     fontSize: 18,
+    textAlign: 'center',
   },
-  chartValuePlaceholder: {
+  chartValue: {
     color: '#3ee06c',
     fontSize: 32,
     fontWeight: 'bold',
