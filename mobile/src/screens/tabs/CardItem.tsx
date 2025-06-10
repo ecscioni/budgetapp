@@ -49,11 +49,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     overflow: 'hidden',
+    marginLeft: 10,
   },
   cardImage: {
     width: '100%',
     height: '100%',
     borderRadius: 15,
+    marginLeft: 30,
   },
   cardImageBackground: {
     width: '100%',
@@ -103,6 +105,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: 'GemunuLibre-ExtraLight',
     fontWeight: 'bold',
+  },
+  backgroundImage: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 15,
+    backgroundColor: 'red', // Temporário para depuração
   },
 });
 
