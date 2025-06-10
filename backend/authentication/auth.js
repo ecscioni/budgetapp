@@ -11,13 +11,12 @@ const pool = new Pool({
   password: dbUrl.password,
   host: dbUrl.hostname,
   port: dbUrl.port,
-  database: dbUrl.pathname.slice(1), // remove the starting '/'
+  database: dbUrl.pathname.slice(1),
   ssl: {
     rejectUnauthorized: false
   }
 });
 
-// Register user function
 async function registerUser(username, email, password) {
   const hashedPassword = await bcrypt.hash(password, 10);
   
@@ -34,7 +33,6 @@ async function registerUser(username, email, password) {
   }
 }
 
-// Login user function
 async function loginUser(usernameOrEmail, password) {
   try {
     const query = 'SELECT password FROM users WHERE username = $1 OR email = $1';
