@@ -1,9 +1,9 @@
-const { Pool } = require('pg');
-const bcrypt = require('bcrypt');
+import { Pool } from 'pg';
+import { hash, compare } from 'bcrypt';
 
 const connectionString = 'postgresql://neondb_owner:npg_86hxibwtXRKp@ep-square-field-a8dgf96x-pooler.eastus2.azure.neon.tech';
 
-const { URL } = require('url');
+import { URL } from 'url';
 const dbUrl = new URL(connectionString);
 
 const pool = new Pool({
@@ -18,7 +18,7 @@ const pool = new Pool({
 });
 
 async function registerUser(username, email, password) {
-  const hashedPassword = await bcrypt.hash(password, 10);
+  const hashedPassword = await hash(password, 10);
   
   try {
     const query = 'INSERT INTO users (username, email, password) VALUES ($1, $2, $3)';
@@ -44,7 +44,7 @@ async function loginUser(usernameOrEmail, password) {
     }
     
     const storedHash = res.rows[0].password;
-    const match = await bcrypt.compare(password, storedHash);
+    const match = await compare(password, storedHash);
     
     if (match) {
       console.log('Login successful!');
@@ -65,4 +65,4 @@ async function loginUser(usernameOrEmail, password) {
 //   await loginUser('johndoe', 'mypassword123');
 // })();
 
-module.exports = { registerUser, loginUser };
+export default { registerUser, loginUser };

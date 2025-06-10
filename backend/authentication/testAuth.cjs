@@ -1,5 +1,5 @@
 // This file is used to test the authentication functions in auth.js
-const { registerUser, loginUser } = require('./auth');
+const { registerUser, loginUser } = require('./auth').default;
 
 console.log('Starting testAuth.js');
 
