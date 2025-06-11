@@ -54,11 +54,25 @@ export default function StatisticsScreen() {
           height={220}
           fromZero
           showValuesOnTopOfBars
+          verticalLabelRotation={-30}
           chartConfig={{
             backgroundGradientFrom: '#232323',
             backgroundGradientTo: '#232323',
-            color: () => '#4ADE80',
+            decimalPlaces: 0,
+            color: (opacity = 1) => `rgba(74, 222, 128, ${opacity})`,
+            labelColor: () => '#d1d5db',
+            barPercentage: 0.6,
+            propsForBackgroundLines: {
+              strokeDasharray: '',
+              stroke: '#444',
+            },
+            propsForLabels: {
+              fontSize: 10,
+            },
           }}
+          formatXLabel={(label) =>
+            label.length > 8 ? `${label.substring(0, 7)}…` : label
+          }
           style={styles.chart}
         />
         <TouchableOpacity style={styles.navButtonRight}>
