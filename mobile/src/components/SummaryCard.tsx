@@ -29,7 +29,7 @@ const SummaryCard: React.FC<Props> = ({ transactions }) => {
         activeOpacity={0.9}
       >
         <LinearGradient
-          colors={["#343434", "#2a2a2a"]}
+          colors={["#0E0E0E", "#2C9C55", "#4ADE80"]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={styles.card}
