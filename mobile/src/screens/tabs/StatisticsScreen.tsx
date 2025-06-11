@@ -1,4 +1,4 @@
-// NOTA: Necessário instalar 'react-native-svg-charts' e 'react-native-svg' para este gráfico funcionar
+// Statistics screen showing spending data using a simple bar chart
 import React, { useState } from 'react';
 import {
   View,
@@ -7,7 +7,7 @@ import {
   StyleSheet,
   Dimensions,
 } from 'react-native';
-import { PieChart } from 'react-native-chart-kit';
+import { BarChart } from 'react-native-chart-kit';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -23,13 +23,14 @@ export default function StatisticsScreen() {
 
   const selected = categories[selectedIndex];
 
-  const chartData = categories.map(cat => ({
-    name: cat.label,
-    population: cat.value,
-    color: cat.color,
-    legendFontColor: '#fff',
-    legendFontSize: 12,
-  }));
+  const chartData = {
+    labels: categories.map((cat) => cat.label),
+    datasets: [
+      {
+        data: categories.map((cat) => cat.value),
+      },
+    ],
+  };
 
   return (
     <View style={styles.container}>
@@ -47,16 +48,17 @@ export default function StatisticsScreen() {
         <TouchableOpacity>
           <Ionicons name="chevron-back" size={28} color="#3ee06c" />
         </TouchableOpacity>
-        <PieChart
+        <BarChart
           data={chartData}
           width={Dimensions.get('window').width - 90}
-          height={200}
-          chartConfig={{ color: () => '#fff' }}
-          accessor="population"
-          backgroundColor="transparent"
-          paddingLeft="0"
-          center={[0, 0]}
-          hasLegend={false}
+          height={220}
+          fromZero
+          showValuesOnTopOfBars
+          chartConfig={{
+            backgroundGradientFrom: '#232323',
+            backgroundGradientTo: '#232323',
+            color: () => '#4ADE80',
+          }}
           style={styles.chart}
         />
         <TouchableOpacity style={styles.navButtonRight}>
