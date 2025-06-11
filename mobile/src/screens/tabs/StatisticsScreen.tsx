@@ -37,7 +37,7 @@ export default function StatisticsScreen() {
       {/* Header */}
       <View style={styles.header}>
         <Ionicons name="person-outline" size={24} color="#FFFFFF" style={{ marginLeft: -5 }} />
-        <Text style={styles.headerTitle}>STATISTIC</Text>
+        <Text style={styles.headerTitle}>STATISTICS</Text>
         <View style={styles.headerIcons}>
           <Ionicons name="notifications-outline" size={24} color="#FFFFFF" style={{ marginRight: -5 }} />
         </View>
@@ -45,9 +45,6 @@ export default function StatisticsScreen() {
 
       {/* Gráfico e navegação (estrutura básica restaurada) */}
       <View style={styles.chartContainer}>
-        <TouchableOpacity>
-          <Ionicons name="chevron-back" size={28} color="#3ee06c" />
-        </TouchableOpacity>
         <BarChart
           data={chartData}
           width={Dimensions.get('window').width - 90}
@@ -58,12 +55,12 @@ export default function StatisticsScreen() {
             backgroundGradientFrom: '#232323',
             backgroundGradientTo: '#232323',
             color: () => '#4ADE80',
+            fillShadowGradient: '#4ADE80',
+            fillShadowGradientOpacity: 1,
+            decimalPlaces: 0,
           }}
           style={styles.chart}
         />
-        <TouchableOpacity style={styles.navButtonRight}>
-          <Ionicons name="chevron-forward" size={28} color="#3ee06c" />
-        </TouchableOpacity>
       </View>
       <View style={styles.chartInfo}>
         <Text style={styles.chartLabel}>{selected.label}</Text>
@@ -128,8 +125,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   chartContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
     marginVertical: 20,
     alignSelf: 'center',
   },
@@ -185,15 +180,5 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     marginTop: 4,
-  },
-    navButtonLeft: {
-    position: 'absolute',
-    left: 0,
-    padding: 8,
-  },
-  navButtonRight: {
-    position: 'absolute',
-    right: 0,
-    padding: 8,
   },
 });
