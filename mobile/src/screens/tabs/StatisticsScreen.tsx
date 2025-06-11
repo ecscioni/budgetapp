@@ -10,6 +10,7 @@ import {
 import { BarChart } from 'react-native-chart-kit';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
+import { transparent } from 'react-native-paper/lib/typescript/styles/themes/v2/colors';
 
 export default function StatisticsScreen() {
   const categories = [
@@ -24,12 +25,14 @@ export default function StatisticsScreen() {
   const selected = categories[selectedIndex];
 
   const chartData = {
-    labels: categories.map((cat) => cat.label),
+    labels: categories.map((cat) => ""),
     datasets: [
       {
         data: categories.map((cat) => cat.value),
+        colors: categories.map((cat) => () => cat.color),
       },
     ],
+    barColors: categories.map((cat) => cat.color),
   };
 
   return (
@@ -45,25 +48,32 @@ export default function StatisticsScreen() {
 
       {/* Gráfico e navegação (estrutura básica restaurada) */}
       <View style={styles.chartContainer}>
-        <TouchableOpacity>
-          <Ionicons name="chevron-back" size={28} color="#3ee06c" />
-        </TouchableOpacity>
         <BarChart
           data={chartData}
-          width={Dimensions.get('window').width - 90}
-          height={220}
+          width={Dimensions.get('window').width - 50}
+          height={200}
           fromZero
           showValuesOnTopOfBars
+          withCustomBarColorFromData={true}
+          flatColor={true}
+          yAxisLabel=""
+          yAxisSuffix="%"
           chartConfig={{
             backgroundGradientFrom: '#232323',
             backgroundGradientTo: '#232323',
-            color: () => '#4ADE80',
+            decimalPlaces: 0,
+            color: (_opacity = 1, index = 0) => categories[index % categories.length].color,
+            fillShadowGradient: '#4ADE80',
+            fillShadowGradientOpacity: 1,
+            labelColor: () => '#FFFFFF',
+            propsForBackgroundLines: {
+              stroke: '#444',
+              strokeDasharray: '0',
+              strokeOpacity: 0.2,
+            },
           }}
           style={styles.chart}
         />
-        <TouchableOpacity style={styles.navButtonRight}>
-          <Ionicons name="chevron-forward" size={28} color="#3ee06c" />
-        </TouchableOpacity>
       </View>
       <View style={styles.chartInfo}>
         <Text style={styles.chartLabel}>{selected.label}</Text>
@@ -128,8 +138,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   chartContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
     marginVertical: 20,
     alignSelf: 'center',
   },
