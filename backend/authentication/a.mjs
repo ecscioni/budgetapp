@@ -52,15 +52,3 @@ export async function loginUser(usernameOrEmail, password) {
     return false;
   }
 }
-<<<<<<< HEAD:backend/authentication/auth.js
-
-// Example usage (uncomment to test):
-// (async () => {
-//   await registerUser('johndoe', 'john@example.com', 'mypassword123');
-//   await loginUser('johndoe', 'mypassword123');
-// })();
-
-export default { registerUser, loginUser };
-//hi///
-=======
->>>>>>> 882da94d13243428b8d6ca3eb5fafd9ee3808b00:backend/authentication/a.mjs
