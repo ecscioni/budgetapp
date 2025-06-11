@@ -1,5 +1,5 @@
 // Statistics screen showing spending data using a simple bar chart
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   View,
   Text,
@@ -10,15 +10,22 @@ import {
 import { BarChart } from 'react-native-chart-kit';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-import { transparent } from 'react-native-paper/lib/typescript/styles/themes/v2/colors';
 
-export default function StatisticsScreen() {
-  const categories = [
-    { label: 'Food expenses', value: 20, color: '#10B981' },
-    { label: 'Transportation', value: 6, color: '#60A5FA' },
-    { label: 'Light bill', value: 4, color: '#F59E0B' },
-    { label: 'Fun expenses', value: 8, color: '#EF4444' },
-  ];
+export default function StatisticsScreen({ navigation }: any) {
+  const categories = useMemo(() => {
+    const baseColors = ['#10B981', '#60A5FA', '#F59E0B', '#EF4444'];
+    const totals: Record<string, number> = {};
+    transactions.forEach(t => {
+      const amount = parseFloat(t.amount.replace('€', '').replace(',', '.'));
+      totals[t.category] = (totals[t.category] || 0) + Math.abs(amount);
+    });
+    const grand = Object.values(totals).reduce((sum, v) => sum + v, 0);
+    return Object.entries(totals).map(([label, val], idx) => ({
+      label,
+      value: grand ? Math.round((val / grand) * 100) : 0,
+      color: baseColors[idx % baseColors.length],
+    }));
+  }, []);
 
   const [selectedIndex, setSelectedIndex] = useState(0);
 
@@ -75,12 +82,17 @@ export default function StatisticsScreen() {
           style={styles.chart}
         />
       </View>
-      <View style={styles.chartInfo}>
+      <TouchableOpacity
+        style={styles.chartInfo}
+        onPress={() =>
+          navigation.navigate('CategoryTransactions', { category: selected.label })
+        }
+      >
         <Text style={styles.chartLabel}>{selected.label}</Text>
         <Text style={styles.chartValue}>
           {selected.value > 0 ? `+${selected.value}%` : `${selected.value}%`}
         </Text>
-      </View>
+      </TouchableOpacity>
 
       <View style={styles.categoriesContainer}>
         {categories.map((cat, index) => (
