@@ -1,5 +1,5 @@
-// NOTA: Necessário instalar 'react-native-svg-charts' e 'react-native-svg' para este gráfico funcionar
-import React, { useState } from 'react';
+// Statistics screen showing spending data using a simple bar chart
+import React, { useMemo, useState } from 'react';
 import {
   View,
   Text,
@@ -7,29 +7,40 @@ import {
   StyleSheet,
   Dimensions,
 } from 'react-native';
-import { PieChart } from 'react-native-chart-kit';
+import { BarChart } from 'react-native-chart-kit';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 
-export default function StatisticsScreen() {
-  const categories = [
-    { label: 'Food expenses', value: 20, color: '#10B981' },
-    { label: 'Transportation', value: 6, color: '#60A5FA' },
-    { label: 'Light bill', value: 4, color: '#F59E0B' },
-    { label: 'Fun expenses', value: 8, color: '#EF4444' },
-  ];
+export default function StatisticsScreen({ navigation }: any) {
+  const categories = useMemo(() => {
+    const baseColors = ['#10B981', '#60A5FA', '#F59E0B', '#EF4444'];
+    const totals: Record<string, number> = {};
+    transactions.forEach(t => {
+      const amount = parseFloat(t.amount.replace('€', '').replace(',', '.'));
+      totals[t.category] = (totals[t.category] || 0) + Math.abs(amount);
+    });
+    const grand = Object.values(totals).reduce((sum, v) => sum + v, 0);
+    return Object.entries(totals).map(([label, val], idx) => ({
+      label,
+      value: grand ? Math.round((val / grand) * 100) : 0,
+      color: baseColors[idx % baseColors.length],
+    }));
+  }, []);
 
   const [selectedIndex, setSelectedIndex] = useState(0);
 
   const selected = categories[selectedIndex];
 
-  const chartData = categories.map(cat => ({
-    name: cat.label,
-    population: cat.value,
-    color: cat.color,
-    legendFontColor: '#fff',
-    legendFontSize: 12,
-  }));
+  const chartData = {
+    labels: categories.map((cat) => ""),
+    datasets: [
+      {
+        data: categories.map((cat) => cat.value),
+        colors: categories.map((cat) => () => cat.color),
+      },
+    ],
+    barColors: categories.map((cat) => cat.color),
+  };
 
   return (
     <View style={styles.container}>
@@ -44,31 +55,44 @@ export default function StatisticsScreen() {
 
       {/* Gráfico e navegação (estrutura básica restaurada) */}
       <View style={styles.chartContainer}>
-        <TouchableOpacity>
-          <Ionicons name="chevron-back" size={28} color="#3ee06c" />
-        </TouchableOpacity>
-        <PieChart
+        <BarChart
           data={chartData}
-          width={Dimensions.get('window').width - 90}
+          width={Dimensions.get('window').width - 50}
           height={200}
-          chartConfig={{ color: () => '#fff' }}
-          accessor="population"
-          backgroundColor="transparent"
-          paddingLeft="0"
-          center={[0, 0]}
-          hasLegend={false}
+          fromZero
+          showValuesOnTopOfBars
+          withCustomBarColorFromData={true}
+          flatColor={true}
+          yAxisLabel=""
+          yAxisSuffix="%"
+          chartConfig={{
+            backgroundGradientFrom: '#232323',
+            backgroundGradientTo: '#232323',
+            decimalPlaces: 0,
+            color: (_opacity = 1, index = 0) => categories[index % categories.length].color,
+            fillShadowGradient: '#4ADE80',
+            fillShadowGradientOpacity: 1,
+            labelColor: () => '#FFFFFF',
+            propsForBackgroundLines: {
+              stroke: '#444',
+              strokeDasharray: '0',
+              strokeOpacity: 0.2,
+            },
+          }}
           style={styles.chart}
         />
-        <TouchableOpacity style={styles.navButtonRight}>
-          <Ionicons name="chevron-forward" size={28} color="#3ee06c" />
-        </TouchableOpacity>
       </View>
-      <View style={styles.chartInfo}>
+      <TouchableOpacity
+        style={styles.chartInfo}
+        onPress={() =>
+          navigation.navigate('CategoryTransactions', { category: selected.label })
+        }
+      >
         <Text style={styles.chartLabel}>{selected.label}</Text>
         <Text style={styles.chartValue}>
           {selected.value > 0 ? `+${selected.value}%` : `${selected.value}%`}
         </Text>
-      </View>
+      </TouchableOpacity>
 
       <View style={styles.categoriesContainer}>
         {categories.map((cat, index) => (
@@ -126,8 +150,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   chartContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
     marginVertical: 20,
     alignSelf: 'center',
   },

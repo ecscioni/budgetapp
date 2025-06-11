@@ -16,6 +16,7 @@ import { RegisterScreen } from './src/screens/auth/RegisterScreen';
 import  {BudgetScreen}  from '@/screens/tabs/BudgetScreen';
 import { GoalScreen } from './src/screens/tabs/GoalScreen';
 import { MoreScreen } from './src/screens/tabs/MoreScreen';
+import { CategoryTransactionsScreen } from './src/screens/tabs/CategoryTransactionsScreen';
 import * as SplashScreen from 'expo-splash-screen';
 import { useFonts } from 'expo-font';
 
@@ -111,6 +112,10 @@ export default function App() {
             <Stack.Screen name='Budget' component={BudgetScreen}/>
             <Stack.Screen name='Goals'  component={GoalScreen}/>
             <Stack.Screen name='More'  component={MoreScreen}/>
+            <Stack.Screen
+              name='CategoryTransactions'
+              component={CategoryTransactionsScreen}
+            />
           </Stack.Navigator>
         </NavigationContainer>
       </View>
