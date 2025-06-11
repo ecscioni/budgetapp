@@ -96,7 +96,7 @@ export const GoalScreen = () => {
             }}
           />
         )}
-         //button that save the goals//
+         
         <Button title="Create Goal" onPress={handleCreateGoal} />
       </View>
     </View>
