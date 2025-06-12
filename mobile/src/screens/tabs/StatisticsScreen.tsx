@@ -6,7 +6,6 @@ import {
   TouchableOpacity,
   Modal,
   StyleSheet,
-  Dimensions,
 } from 'react-native';
 import { BarChart } from 'react-native-chart-kit';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -20,9 +19,9 @@ export default function StatisticsScreen({ navigation }: any) {
     const totals: Record<string, number> = {};
     transactions.forEach(t => {
       const amount = parseFloat(t.amount.replace('€', '').replace(',', '.'));
-      totals[t.category] = (totals[t.category] || 0) + Math.abs(amount);
+      totals[t.category] = (totals[t.category] || 0) + amount;
     });
-    const grand = Object.values(totals).reduce((sum, v) => sum + v, 0);
+    const grand = Object.values(totals).reduce((sum, v) => sum + Math.abs(v), 0);
     return Object.entries(totals).map(([label, val], idx) => ({
       label,
       value: grand ? Math.round((val / grand) * 100) : 0,
@@ -60,10 +59,10 @@ export default function StatisticsScreen({ navigation }: any) {
       <SummaryCard transactions={transactions} />
 
       {/* Gráfico e navegação (estrutura básica restaurada) */}
-      <View style={styles.chartContainer}>
+      <View style={[styles.chartContainer, { width: categories.length * 75 }]}>
         <BarChart
           data={chartData}
-          width={Dimensions.get('window').width - 10}
+          width={categories.length * 75}
           height={200}
           fromZero
           showValuesOnTopOfBars
