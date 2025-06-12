@@ -73,10 +73,10 @@ export default function StatisticsScreen({ navigation }: any) {
             backgroundGradientFrom: '#1f1f1f',
             backgroundGradientTo: '#1f1f1f',
             decimalPlaces: 0,
-            barPercentage: 0.6,
-            color: (_opacity = 1, index = 0) => categories[index % categories.length].color,
+            barPercentage: 0.9,
+            color: () => '#E7E7E7',
             fillShadowGradient: '#ffffff',
-            fillShadowGradientOpacity: 0.15,
+            fillShadowGradientOpacity: 0.5,
             labelColor: () => '#FFFFFF',
             propsForBackgroundLines: {
               stroke: '#333',
