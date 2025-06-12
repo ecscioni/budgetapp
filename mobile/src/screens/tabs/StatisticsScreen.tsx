@@ -76,7 +76,7 @@ export default function StatisticsScreen({ navigation }: any) {
             barPercentage: 0.9,
             color: () => '#E7E7E7',
             fillShadowGradient: '#ffffff',
-            fillShadowGradientOpacity: 0.5,
+            fillShadowGradientOpacity: 0.6,
             labelColor: () => '#FFFFFF',
             propsForBackgroundLines: {
               stroke: '#333',
