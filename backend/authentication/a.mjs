@@ -1,31 +1,25 @@
 import { Pool } from 'pg';
 import { hash, compare } from 'bcrypt';
 
-const connectionString = 'postgresql://neondb_owner:npg_86hxibwtXRKp@ep-square-field-a8dgf96x-pooler.eastus2.azure.neon.tech';
-
-import { URL } from 'url';
-const dbUrl = new URL(connectionString);
-
 const pool = new Pool({
-  user: dbUrl.username,
-  password: dbUrl.password,
-  host: dbUrl.hostname,
-  port: dbUrl.port,
-  database: dbUrl.pathname.slice(1),
+  user: 'neondb_owner',
+  password: 'npg_86hxibwtXRKp',
+  host: 'ep-square-field-a8dgf96x-pooler.eastus2.azure.neon.tech',
+  database: 'neondb',
+  port: 5432,
   ssl: {
     rejectUnauthorized: false
   }
 });
 
-async function registerUser(username, email, password) {
+export async function registerUser(username, email, password) {
   const hashedPassword = await hash(password, 10);
-  
   try {
     const query = 'INSERT INTO users (username, email, password) VALUES ($1, $2, $3)';
     await pool.query(query, [username, email, hashedPassword]);
-    console.log('User registered successfully!');
+    console.log(' User registered successfully!');
   } catch (err) {
-    if (err.code === '23505') {  // Unique violation
+    if (err.code === '23505') {
       console.log('Username or email already exists.');
     } else {
       console.error('Registration error:', err);
@@ -33,19 +27,19 @@ async function registerUser(username, email, password) {
   }
 }
 
-async function loginUser(usernameOrEmail, password) {
+export async function loginUser(usernameOrEmail, password) {
   try {
     const query = 'SELECT password FROM users WHERE username = $1 OR email = $1';
     const res = await pool.query(query, [usernameOrEmail]);
-    
+
     if (res.rows.length === 0) {
       console.log('Login failed: user not found.');
       return false;
     }
-    
+
     const storedHash = res.rows[0].password;
     const match = await compare(password, storedHash);
-    
+
     if (match) {
       console.log('Login successful!');
       return true;
@@ -58,11 +52,3 @@ async function loginUser(usernameOrEmail, password) {
     return false;
   }
 }
-
-// Example usage (uncomment to test):
-// (async () => {
-//   await registerUser('johndoe', 'john@example.com', 'mypassword123');
-//   await loginUser('johndoe', 'mypassword123');
-// })();
-
-export default { registerUser, loginUser };
