@@ -10,6 +10,7 @@ import {
 import { BarChart } from 'react-native-chart-kit';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
+import { transactions } from '@/data/transactions';
 
 export default function StatisticsScreen({ navigation }: any) {
   const categories = useMemo(() => {
@@ -57,7 +58,7 @@ export default function StatisticsScreen({ navigation }: any) {
       <View style={styles.chartContainer}>
         <BarChart
           data={chartData}
-          width={Dimensions.get('window').width - 50}
+          width={Dimensions.get('window').width - 10}
           height={200}
           fromZero
           showValuesOnTopOfBars
@@ -76,7 +77,7 @@ export default function StatisticsScreen({ navigation }: any) {
             propsForBackgroundLines: {
               stroke: '#444',
               strokeDasharray: '0',
-              strokeOpacity: 0.2,
+              strokeOpacity: 0.5,
             },
           }}
           style={styles.chart}
