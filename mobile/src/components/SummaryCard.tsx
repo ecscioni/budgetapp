@@ -1,14 +1,16 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Modal, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Modal, TouchableOpacity, ViewStyle } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Transaction } from '../data/transactions';
 
 type Props = {
   transactions: Transaction[];
+  /** Optional style overrides for the card container */
+  style?: ViewStyle;
 };
 
-const SummaryCard: React.FC<Props> = ({ transactions }) => {
+const SummaryCard: React.FC<Props> = ({ transactions, style }) => {
   const [modalVisible, setModalVisible] = useState(false);
 
   const income = transactions
@@ -32,7 +34,7 @@ const SummaryCard: React.FC<Props> = ({ transactions }) => {
           colors={["#0E0E0E", "#2C9C55", "#4ADE80"]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
-          style={styles.card}
+          style={[styles.card, style]}
         >
           <Text style={styles.title}>Budget Left</Text>
           <Text style={styles.balance}>€{balance.toFixed(2)}</Text>

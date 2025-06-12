@@ -1,15 +1,17 @@
 // Statistics screen showing spending data using a simple bar chart
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useRef, useEffect } from 'react';
 import {
   View,
   Text,
   TouchableOpacity,
+  Modal,
   StyleSheet,
-  Dimensions,
+  Animated,
 } from 'react-native';
 import { BarChart } from 'react-native-chart-kit';
-import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
+import { transactions } from '@/data/transactions';
+import SummaryCard from '@/components/SummaryCard';
 
 export default function StatisticsScreen({ navigation }: any) {
   const categories = useMemo(() => {
@@ -17,9 +19,9 @@ export default function StatisticsScreen({ navigation }: any) {
     const totals: Record<string, number> = {};
     transactions.forEach(t => {
       const amount = parseFloat(t.amount.replace('€', '').replace(',', '.'));
-      totals[t.category] = (totals[t.category] || 0) + Math.abs(amount);
+      totals[t.category] = (totals[t.category] || 0) + amount;
     });
-    const grand = Object.values(totals).reduce((sum, v) => sum + v, 0);
+    const grand = Object.values(totals).reduce((sum, v) => sum + Math.abs(v), 0);
     return Object.entries(totals).map(([label, val], idx) => ({
       label,
       value: grand ? Math.round((val / grand) * 100) : 0,
@@ -28,6 +30,18 @@ export default function StatisticsScreen({ navigation }: any) {
   }, []);
 
   const [selectedIndex, setSelectedIndex] = useState(0);
+  const [modalVisible, setModalVisible] = useState(false);
+
+  // Animation for bringing elements to life when the screen loads
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    Animated.timing(fadeAnim, {
+      toValue: 1,
+      duration: 600,
+      useNativeDriver: true,
+    }).start();
+  }, []);
 
   const selected = categories[selectedIndex];
 
@@ -53,12 +67,27 @@ export default function StatisticsScreen({ navigation }: any) {
         </View>
       </View>
 
-      {/* Gráfico e navegação (estrutura básica restaurada) */}
-      <View style={styles.chartContainer}>
-        <BarChart
-          data={chartData}
-          width={Dimensions.get('window').width - 50}
-          height={200}
+      <Animated.View
+        style={{
+          opacity: fadeAnim,
+          transform: [
+            {
+              translateY: fadeAnim.interpolate({
+                inputRange: [0, 1],
+                outputRange: [20, 0],
+              }),
+            },
+          ],
+        }}
+      >
+        <SummaryCard transactions={transactions} style={styles.slimSummaryCard} />
+
+        {/* Gráfico e navegação (estrutura básica restaurada) */}
+        <View style={[styles.chartContainer, { width: categories.length * 85 }]}>
+          <BarChart
+            data={chartData}
+            width={categories.length * 85}
+            height={200}
           fromZero
           showValuesOnTopOfBars
           withCustomBarColorFromData={true}
@@ -66,60 +95,74 @@ export default function StatisticsScreen({ navigation }: any) {
           yAxisLabel=""
           yAxisSuffix="%"
           chartConfig={{
-            backgroundGradientFrom: '#232323',
-            backgroundGradientTo: '#232323',
+            backgroundGradientFrom: '#1f1f1f',
+            backgroundGradientTo: '#1f1f1f',
             decimalPlaces: 0,
-            color: (_opacity = 1, index = 0) => categories[index % categories.length].color,
-            fillShadowGradient: '#4ADE80',
-            fillShadowGradientOpacity: 1,
+            barPercentage: 0.9,
+            color: () => '#E7E7E7',
+            fillShadowGradient: '#ffffff',
+            fillShadowGradientOpacity: 0.6,
             labelColor: () => '#FFFFFF',
             propsForBackgroundLines: {
-              stroke: '#444',
+              stroke: '#333',
               strokeDasharray: '0',
-              strokeOpacity: 0.2,
+              strokeOpacity: 0.4,
             },
           }}
-          style={styles.chart}
-        />
-      </View>
-      <TouchableOpacity
-        style={styles.chartInfo}
-        onPress={() =>
-          navigation.navigate('CategoryTransactions', { category: selected.label })
-        }
-      >
-        <Text style={styles.chartLabel}>{selected.label}</Text>
-        <Text style={styles.chartValue}>
-          {selected.value > 0 ? `+${selected.value}%` : `${selected.value}%`}
-        </Text>
-      </TouchableOpacity>
+            style={styles.chart}
+          />
+        </View>
 
-      <View style={styles.categoriesContainer}>
-        {categories.map((cat, index) => (
-          <TouchableOpacity
-            key={cat.label}
-            style={styles.categoryBlock}
-            onPress={() => setSelectedIndex(index)}
+        <View style={styles.categoriesContainer}>
+          {categories.map((cat, index) => (
+            <TouchableOpacity
+              key={cat.label}
+              style={styles.categoryBlock}
+              onPress={() => {
+              setSelectedIndex(index);
+              setModalVisible(true);
+            }}
           >
-            <LinearGradient
-              colors={["#4ADE80", "#2C9C55"]}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
+            <View
               style={[
                 styles.gradientBlock,
+                { backgroundColor: cat.color },
                 index === selectedIndex && styles.activeGradientBlock,
               ]}
             >
               <Text style={styles.categoryLabel}>{cat.label}</Text>
-              {index === selectedIndex && (
-                <Text style={styles.categoryValue}>
-                  {cat.value > 0 ? `+${cat.value}%` : `${cat.value}%`}
-                </Text>
-              )}
-            </LinearGradient>
-          </TouchableOpacity>
-        ))}
-      </View>
+              <Text style={styles.categoryValue}>
+                {cat.value > 0 ? `+${cat.value}%` : `${cat.value}%`}
+              </Text>
+            </View>
+            </TouchableOpacity>
+          ))}
+        </View>
+      </Animated.View>
+
+      {modalVisible && (
+        <Modal visible transparent animationType="fade">
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContent}>
+              <Text style={styles.modalTitle}>{selected.label}</Text>
+              {transactions
+                .filter(t => t.category === selected.label)
+                .map(t => (
+                  <View key={t.id} style={styles.detailRow}>
+                    <Text style={styles.label}>{t.counterparty}</Text>
+                    <Text style={styles.value}>{t.amount}</Text>
+                  </View>
+                ))}
+              <TouchableOpacity
+                style={styles.closeButton}
+                onPress={() => setModalVisible(false)}
+              >
+                <Text style={styles.closeText}>Close</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
+      )}
     </View>
   );
 }
@@ -152,27 +195,15 @@ const styles = StyleSheet.create({
   chartContainer: {
     marginVertical: 20,
     alignSelf: 'center',
+    overflow: 'hidden',
   },
   chart: {
     marginHorizontal: 10,
     alignItems: 'center',
     justifyContent: 'center',
     alignSelf: 'center',
-    borderRadius: 10,
-  },
-  chartInfo: {
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  chartLabel: {
-    color: '#fff',
-    fontSize: 18,
-    marginBottom: 4,
-  },
-  chartValue: {
-    color: '#3ee06c',
-    fontSize: 32,
-    fontWeight: 'bold',
+    borderRadius: 12,
+    overflow: 'hidden',
   },
   categoriesContainer: {
     flexDirection: 'row',
@@ -215,5 +246,55 @@ const styles = StyleSheet.create({
     position: 'absolute',
     right: 0,
     padding: 8,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContent: {
+    backgroundColor: '#2a2a2a',
+    padding: 24,
+    borderRadius: 20,
+    width: '85%',
+  },
+  modalTitle: {
+    color: '#FFFFFF',
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 20,
+    textAlign: 'center',
+  },
+  detailRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 12,
+  },
+  label: {
+    color: '#CCCCCC',
+    fontSize: 16,
+  },
+  value: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '500',
+  },
+  closeButton: {
+    backgroundColor: '#48BF73',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+    marginTop: 20,
+    alignSelf: 'center',
+  },
+  closeText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  slimSummaryCard: {
+    width: '95%',
+    alignSelf: 'center',
   },
 });
