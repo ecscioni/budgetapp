@@ -1,11 +1,12 @@
 // Statistics screen showing spending data using a simple bar chart
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useRef, useEffect } from 'react';
 import {
   View,
   Text,
   TouchableOpacity,
   Modal,
   StyleSheet,
+  Animated,
 } from 'react-native';
 import { BarChart } from 'react-native-chart-kit';
 import { Ionicons } from '@expo/vector-icons';
@@ -31,6 +32,17 @@ export default function StatisticsScreen({ navigation }: any) {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [modalVisible, setModalVisible] = useState(false);
 
+  // Animation for bringing elements to life when the screen loads
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    Animated.timing(fadeAnim, {
+      toValue: 1,
+      duration: 600,
+      useNativeDriver: true,
+    }).start();
+  }, []);
+
   const selected = categories[selectedIndex];
 
   const chartData = {
@@ -55,14 +67,27 @@ export default function StatisticsScreen({ navigation }: any) {
         </View>
       </View>
 
-      <SummaryCard transactions={transactions} />
+      <Animated.View
+        style={{
+          opacity: fadeAnim,
+          transform: [
+            {
+              translateY: fadeAnim.interpolate({
+                inputRange: [0, 1],
+                outputRange: [20, 0],
+              }),
+            },
+          ],
+        }}
+      >
+        <SummaryCard transactions={transactions} style={styles.slimSummaryCard} />
 
-      {/* Gráfico e navegação (estrutura básica restaurada) */}
-      <View style={[styles.chartContainer, { width: categories.length * 85 }]}>
-        <BarChart
-          data={chartData}
-          width={categories.length * 85}
-          height={200}
+        {/* Gráfico e navegação (estrutura básica restaurada) */}
+        <View style={[styles.chartContainer, { width: categories.length * 85 }]}>
+          <BarChart
+            data={chartData}
+            width={categories.length * 85}
+            height={200}
           fromZero
           showValuesOnTopOfBars
           withCustomBarColorFromData={true}
@@ -84,16 +109,16 @@ export default function StatisticsScreen({ navigation }: any) {
               strokeOpacity: 0.4,
             },
           }}
-          style={styles.chart}
-        />
-      </View>
+            style={styles.chart}
+          />
+        </View>
 
-      <View style={styles.categoriesContainer}>
-        {categories.map((cat, index) => (
-          <TouchableOpacity
-            key={cat.label}
-            style={styles.categoryBlock}
-            onPress={() => {
+        <View style={styles.categoriesContainer}>
+          {categories.map((cat, index) => (
+            <TouchableOpacity
+              key={cat.label}
+              style={styles.categoryBlock}
+              onPress={() => {
               setSelectedIndex(index);
               setModalVisible(true);
             }}
@@ -110,9 +135,10 @@ export default function StatisticsScreen({ navigation }: any) {
                 {cat.value > 0 ? `+${cat.value}%` : `${cat.value}%`}
               </Text>
             </View>
-          </TouchableOpacity>
-        ))}
-      </View>
+            </TouchableOpacity>
+          ))}
+        </View>
+      </Animated.View>
 
       {modalVisible && (
         <Modal visible transparent animationType="fade">
@@ -266,5 +292,9 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 14,
     fontWeight: '600',
+  },
+  slimSummaryCard: {
+    width: '95%',
+    alignSelf: 'center',
   },
 });
