@@ -4,6 +4,7 @@ import {
   View,
   Text,
   TouchableOpacity,
+  Modal,
   StyleSheet,
   Dimensions,
 } from 'react-native';
@@ -11,6 +12,7 @@ import { BarChart } from 'react-native-chart-kit';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { transactions } from '@/data/transactions';
+import SummaryCard from '@/components/SummaryCard';
 
 export default function StatisticsScreen({ navigation }: any) {
   const categories = useMemo(() => {
@@ -29,6 +31,7 @@ export default function StatisticsScreen({ navigation }: any) {
   }, []);
 
   const [selectedIndex, setSelectedIndex] = useState(0);
+  const [modalVisible, setModalVisible] = useState(false);
 
   const selected = categories[selectedIndex];
 
@@ -53,6 +56,8 @@ export default function StatisticsScreen({ navigation }: any) {
           <Ionicons name="notifications-outline" size={24} color="#FFFFFF" style={{ marginRight: -5 }} />
         </View>
       </View>
+
+      <SummaryCard transactions={transactions} />
 
       {/* Gráfico e navegação (estrutura básica restaurada) */}
       <View style={styles.chartContainer}>
@@ -85,9 +90,7 @@ export default function StatisticsScreen({ navigation }: any) {
       </View>
       <TouchableOpacity
         style={styles.chartInfo}
-        onPress={() =>
-          navigation.navigate('CategoryTransactions', { category: selected.label })
-        }
+        onPress={() => setModalVisible(true)}
       >
         <Text style={styles.chartLabel}>{selected.label}</Text>
         <Text style={styles.chartValue}>
@@ -121,6 +124,30 @@ export default function StatisticsScreen({ navigation }: any) {
           </TouchableOpacity>
         ))}
       </View>
+
+      {modalVisible && (
+        <Modal visible transparent animationType="fade">
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContent}>
+              <Text style={styles.modalTitle}>{selected.label}</Text>
+              {transactions
+                .filter(t => t.category === selected.label)
+                .map(t => (
+                  <View key={t.id} style={styles.detailRow}>
+                    <Text style={styles.label}>{t.counterparty}</Text>
+                    <Text style={styles.value}>{t.amount}</Text>
+                  </View>
+                ))}
+              <TouchableOpacity
+                style={styles.closeButton}
+                onPress={() => setModalVisible(false)}
+              >
+                <Text style={styles.closeText}>Close</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
+      )}
     </View>
   );
 }
@@ -153,6 +180,7 @@ const styles = StyleSheet.create({
   chartContainer: {
     marginVertical: 20,
     alignSelf: 'center',
+    overflow: 'hidden',
   },
   chart: {
     marginHorizontal: 10,
@@ -160,6 +188,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignSelf: 'center',
     borderRadius: 10,
+    overflow: 'hidden',
   },
   chartInfo: {
     alignItems: 'center',
@@ -216,5 +245,51 @@ const styles = StyleSheet.create({
     position: 'absolute',
     right: 0,
     padding: 8,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContent: {
+    backgroundColor: '#2a2a2a',
+    padding: 24,
+    borderRadius: 20,
+    width: '85%',
+  },
+  modalTitle: {
+    color: '#FFFFFF',
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 20,
+    textAlign: 'center',
+  },
+  detailRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 12,
+  },
+  label: {
+    color: '#CCCCCC',
+    fontSize: 16,
+  },
+  value: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '500',
+  },
+  closeButton: {
+    backgroundColor: '#48BF73',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+    marginTop: 20,
+    alignSelf: 'center',
+  },
+  closeText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontWeight: '600',
   },
 });
