@@ -8,7 +8,6 @@ import {
   StyleSheet,
 } from 'react-native';
 import { BarChart } from 'react-native-chart-kit';
-import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { transactions } from '@/data/transactions';
 import SummaryCard from '@/components/SummaryCard';
@@ -71,55 +70,46 @@ export default function StatisticsScreen({ navigation }: any) {
           yAxisLabel=""
           yAxisSuffix="%"
           chartConfig={{
-            backgroundGradientFrom: '#232323',
-            backgroundGradientTo: '#232323',
+            backgroundGradientFrom: '#1f1f1f',
+            backgroundGradientTo: '#1f1f1f',
             decimalPlaces: 0,
+            barPercentage: 0.6,
             color: (_opacity = 1, index = 0) => categories[index % categories.length].color,
-            fillShadowGradient: '#4ADE80',
-            fillShadowGradientOpacity: 1,
+            fillShadowGradient: '#ffffff',
+            fillShadowGradientOpacity: 0.15,
             labelColor: () => '#FFFFFF',
             propsForBackgroundLines: {
-              stroke: '#444',
+              stroke: '#333',
               strokeDasharray: '0',
-              strokeOpacity: 0.5,
+              strokeOpacity: 0.4,
             },
           }}
           style={styles.chart}
         />
       </View>
-      <TouchableOpacity
-        style={styles.chartInfo}
-        onPress={() => setModalVisible(true)}
-      >
-        <Text style={styles.chartLabel}>{selected.label}</Text>
-        <Text style={styles.chartValue}>
-          {selected.value > 0 ? `+${selected.value}%` : `${selected.value}%`}
-        </Text>
-      </TouchableOpacity>
 
       <View style={styles.categoriesContainer}>
         {categories.map((cat, index) => (
           <TouchableOpacity
             key={cat.label}
             style={styles.categoryBlock}
-            onPress={() => setSelectedIndex(index)}
+            onPress={() => {
+              setSelectedIndex(index);
+              setModalVisible(true);
+            }}
           >
-            <LinearGradient
-              colors={["#4ADE80", "#2C9C55"]}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
+            <View
               style={[
                 styles.gradientBlock,
+                { backgroundColor: cat.color },
                 index === selectedIndex && styles.activeGradientBlock,
               ]}
             >
               <Text style={styles.categoryLabel}>{cat.label}</Text>
-              {index === selectedIndex && (
-                <Text style={styles.categoryValue}>
-                  {cat.value > 0 ? `+${cat.value}%` : `${cat.value}%`}
-                </Text>
-              )}
-            </LinearGradient>
+              <Text style={styles.categoryValue}>
+                {cat.value > 0 ? `+${cat.value}%` : `${cat.value}%`}
+              </Text>
+            </View>
           </TouchableOpacity>
         ))}
       </View>
@@ -186,22 +176,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     alignSelf: 'center',
-    borderRadius: 10,
+    borderRadius: 12,
     overflow: 'hidden',
-  },
-  chartInfo: {
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  chartLabel: {
-    color: '#fff',
-    fontSize: 18,
-    marginBottom: 4,
-  },
-  chartValue: {
-    color: '#3ee06c',
-    fontSize: 32,
-    fontWeight: 'bold',
   },
   categoriesContainer: {
     flexDirection: 'row',
