@@ -58,10 +58,10 @@ export default function StatisticsScreen({ navigation }: any) {
       <SummaryCard transactions={transactions} />
 
       {/* Gráfico e navegação (estrutura básica restaurada) */}
-      <View style={[styles.chartContainer, { width: categories.length * 75 }]}>
+      <View style={[styles.chartContainer, { width: categories.length * 85 }]}>
         <BarChart
           data={chartData}
-          width={categories.length * 75}
+          width={categories.length * 85}
           height={200}
           fromZero
           showValuesOnTopOfBars
