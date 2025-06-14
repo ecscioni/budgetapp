@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Button } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Button, TextInput } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
-import DateTimePicker from '@react-native-community/datetimepicker';
-import { TextInput } from 'react-native-gesture-handler';
+import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
 
 export const GoalScreen = () => {
   const [goalName, setGoalName] = useState('');
@@ -34,19 +33,24 @@ export const GoalScreen = () => {
         <TextInput
           style={styles.text}
           placeholder='Goal name'
+          placeholderTextColor="#aaa"
           value={goalName}
           onChangeText={setGoalName}
         />
         <TextInput
           style={styles.text}
           placeholder='Amount'
+          placeholderTextColor="#aaa"
           value={amount}
           onChangeText={setAmount}
           keyboardType='numeric'
         />
 
         <Text style={styles.text}>Category:</Text>
-        <Picker selectedValue={category} onValueChange={setCategory}>
+        <Picker
+          selectedValue={category}
+          onValueChange={(itemValue) => setCategory(itemValue)}
+        >
           <Picker.Item label="Vacation" value="Vacation" />
           <Picker.Item label="To buy a car" value="Car" />
           <Picker.Item label="Emergency" value="Emergency" />
@@ -56,7 +60,10 @@ export const GoalScreen = () => {
         </Picker>
 
         <Text style={styles.text}>Recurrency:</Text>
-        <Picker selectedValue={recurrency} onValueChange={setRecurrency}>
+        <Picker
+          selectedValue={recurrency}
+          onValueChange={(itemValue) => setRecurrency(itemValue)}
+        >
           <Picker.Item label="Daily" value="Daily" />
           <Picker.Item label="Weekly" value="Weekly" />
           <Picker.Item label="Monthly" value="Monthly" />
@@ -73,7 +80,7 @@ export const GoalScreen = () => {
             value={startDate}
             mode="date"
             display="default"
-            onChange={(event, selectedDate) => {
+            onChange={(event: DateTimePickerEvent, selectedDate?: Date) => {
               setShowStartPicker(false);
               if (selectedDate) setStartDate(selectedDate);
             }}
@@ -90,13 +97,13 @@ export const GoalScreen = () => {
             value={endDate}
             mode="date"
             display="default"
-            onChange={(event, selectedDate) => {
+            onChange={(event: DateTimePickerEvent, selectedDate?: Date) => {
               setShowEndPicker(false);
               if (selectedDate) setEndDate(selectedDate);
             }}
           />
         )}
-         
+
         <Button title="Create Goal" onPress={handleCreateGoal} />
       </View>
     </View>
@@ -127,5 +134,8 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: 'white',
     marginVertical: 6,
+    borderBottomWidth: 1,
+    borderColor: '#555',
+    padding: 6,
   },
 });
