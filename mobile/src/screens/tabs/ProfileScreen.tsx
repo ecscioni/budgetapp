@@ -57,7 +57,7 @@ const styles = StyleSheet.create({
     textAlign: 'left',
   },
   logOutBox: {
-     backgroundColor: 'green',
+    backgroundColor: '#48BF73',
     borderRadius: 10,
     padding: 16,
     marginBottom: 10,

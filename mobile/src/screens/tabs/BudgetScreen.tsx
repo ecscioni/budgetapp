@@ -10,6 +10,10 @@ export const BudgetScreen = () => {
   const [recurrency, setRecurrency] = useState('Monthly');
   const [startDate, setStartDate] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
+  const [showRecurrencyPicker, setShowRecurrencyPicker] = useState(false);
+  const [showCategoryPicker, setShowCategoryPicker] = useState(false);
+  const [endDate, setEndDate] = useState(new Date());
+
 
   const handleCreateBudget = () => {
     const budgetData = {
@@ -24,15 +28,19 @@ export const BudgetScreen = () => {
   };
 
   return (
+
     <View style={styles.container}>
       <TouchableOpacity></TouchableOpacity>
       <Text style={styles.title}>Create Your Budget</Text>
 
-      <TextInput
+      <View style={styles.inputBox}>
+        <TextInput
         style={styles.input}
         placeholder="Budget Name"
         value={budgetName}
         onChangeText={setBudgetName}
+        placeholderTextColor="white"
+        
       />
 
       <TextInput
@@ -41,24 +49,69 @@ export const BudgetScreen = () => {
         value={amount}
         onChangeText={setAmount}
         keyboardType="numeric"
+        placeholderTextColor="white"
+        
+        
+        
       />
 
       <Text style={styles.label}>Category:</Text>
-      <Picker selectedValue={category} onValueChange={(value) => setCategory(value)}>
-        <Picker.Item label="Food" value="Food" />
-        <Picker.Item label="Rent" value="Rent" />
-        <Picker.Item label="Transportation" value="Transportation" />
-        <Picker.Item label="Entertainment" value="Entertainment" />
-        <Picker.Item label="Other" value="Other" />
-      </Picker>
 
-      <Text style={styles.label}>Recurrency:</Text>
-      <Picker selectedValue={recurrency} onValueChange={(value) => setRecurrency(value)}>
-        <Picker.Item label="Daily" value="Daily" />
-        <Picker.Item label="Weekly" value="Weekly" />
-        <Picker.Item label="Monthly" value="Monthly" />
-        <Picker.Item label="Yearly" value="Yearly" />
-      </Picker>
+<TouchableOpacity
+  style={styles.pickerButton}
+  onPress={() => setShowCategoryPicker(true)}
+>
+  <Text style={styles.pickerText}>{category}</Text>
+</TouchableOpacity>
+
+{showCategoryPicker && (
+  <View style={styles.pickerModal}>
+    <Picker
+      selectedValue={category}
+      onValueChange={(value) => {
+        setCategory(value);
+        setShowCategoryPicker(false); // hide after selection
+      }}
+      dropdownIconColor="white"
+    >
+      <Picker.Item label="Food" value="Food" />
+      <Picker.Item label="Rent" value="Rent" />
+      <Picker.Item label="Transportation" value="Transportation" />
+      <Picker.Item label="Entertainment" value="Entertainment" />
+      <Picker.Item label="Other" value="Other" />
+    </Picker>
+  </View>
+)}
+
+
+      
+<Text style={styles.label}>Recurrency:</Text>
+
+<TouchableOpacity
+  style={styles.pickerButton}
+  onPress={() => setShowRecurrencyPicker(true)}
+>
+  <Text style={styles.pickerText}>{recurrency}</Text>
+</TouchableOpacity>
+
+{showRecurrencyPicker && (
+  <View style={styles.pickerModal}>
+    <Picker
+      selectedValue={recurrency}
+      onValueChange={(value) => {
+        setRecurrency(value);
+        setShowRecurrencyPicker(false); // hide picker after selection
+      }}
+      dropdownIconColor="white"
+    >
+      <Picker.Item label="Daily" value="Daily" />
+      <Picker.Item label="Weekly" value="Weekly" />
+      <Picker.Item label="Monthly" value="Monthly" />
+      <Picker.Item label="Yearly" value="Yearly" />
+    </Picker>
+  </View>
+)}
+
 
       <TouchableOpacity onPress={() => setShowDatePicker(true)}>
         <Text style={styles.dateText}>Start Date: {startDate.toDateString()}</Text>
@@ -76,10 +129,21 @@ export const BudgetScreen = () => {
           }}
         />
       )}
-      <View style={styles.box}>
-        <Button  title="Create Budget" onPress={handleCreateBudget} />
+      
+      
 
-      </View>
+      
+    </View>
+
+    <TouchableOpacity style={styles.customButton} onPress={handleCreateBudget}>
+       <Text style={styles.buttonText}>Create Budget</Text>
+    </TouchableOpacity>
+
+
+      
+
+      
+
       
 
       
@@ -91,39 +155,92 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor:'#222222',
+    backgroundColor:'#1f1f1f',
   },
   title: {
     fontSize: 22,
-    marginBottom: 20,
     fontWeight: 'bold',
-    color:'green'
+    color:'green',
+    marginTop: 90,
+    textAlign: 'center',
   },
   input: {
     borderWidth: 1,
     borderColor: '#ccc',
-    padding: 10,
+    padding: 5,
     marginBottom: 15,
     borderRadius: 8,
-    color:'white'
+    color:'white',
+    backgroundColor: '#333333',
+    
+   
   },
   label: {
     marginTop: 10,
-    fontWeight: '600',
-    color: 'white'
+    fontWeight: 'bold',
+    color: 'white',
+    backgroundColor: '#333333',
+    padding: 5,
+    borderRadius: 5,
+    marginBottom: 5,
+    borderColor: '#ccc',
+    borderWidth: 1,
   },
   dateText: {
     paddingVertical: 10,
     fontSize: 16,
     color: 'white',
+    fontWeight: 'bold',
   },
-  box: {
+  
+  inputBox: {
     borderRadius: 10,
-    padding: 16,
-    marginBottom: 10,
-    width: '80%',
-    alignItems: 'flex-start',
-    color: 'green',
-    
-  }
+    borderColor: '#48BF73',
+    padding: 10,
+    width: '90%',
+    backgroundColor: '#333333',
+    marginBottom: 20,
+    alignSelf: 'center',
+    borderWidth: 1,
+    fontWeight: 'bold',
+    marginTop: 100,
+  
+  },
+  pickerButton: {
+  backgroundColor: '#333333',
+  padding: 12,
+  borderRadius: 10,
+  borderColor: '#ccc',
+  borderWidth: 1,
+  marginBottom: 15,
+},
+pickerText: {
+  color: 'white',
+  fontSize: 16,
+  fontWeight: 'bold',
+},
+pickerModal: {
+  backgroundColor: '#333333',
+  borderRadius: 10,
+  marginBottom: 15,
+},
+customButton: {
+  backgroundColor: '#48BF73',
+  paddingVertical: 14,
+  paddingHorizontal: 30,
+  borderRadius: 10,
+  alignItems: 'center',
+  justifyContent: 'center',
+  alignSelf: 'center',
+  marginBottom: 20,
+  width: '90%',
+},
+
+buttonText: {
+  color: 'white',
+  fontSize: 16,
+  fontWeight: 'bold',
+}
+
+
 });
