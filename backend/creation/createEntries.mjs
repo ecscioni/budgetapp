@@ -10,10 +10,18 @@ const pool = new Pool({
   ssl: { rejectUnauthorized: false }
 });
 
-async function createBudget(user_id, category_name, time_frame_name, amount_limit) {
+async function createBudget(user_id, name, category_name, time_frame_name, amount_limit) {
   try {
-    const category = await pool.query('SELECT id FROM Category WHERE name = $1', [category_name]);
-    const timeFrame = await pool.query('SELECT id FROM TimeFrame WHERE name = $1', [time_frame_name]);
+    console.log('Creating budget for user:', user_id, '| Budget:', name);
+
+    const category = await pool.query(
+      'SELECT id FROM Category WHERE LOWER(name) = LOWER($1)',
+      [category_name]
+    );
+    const timeFrame = await pool.query(
+      'SELECT id FROM TimeFrame WHERE LOWER(name) = LOWER($1)',
+      [time_frame_name]
+    );
 
     if (category.rows.length === 0 || timeFrame.rows.length === 0) {
       throw new Error('Invalid category or time frame name');
@@ -23,23 +31,30 @@ async function createBudget(user_id, category_name, time_frame_name, amount_limi
     const time_frame_id = timeFrame.rows[0].id;
 
     const insert = await pool.query(
-      `INSERT INTO Budget (user_id, category_id, time_frame_id, amount_limit)
-       VALUES ($1, $2, $3, $4) RETURNING *`,
-      [user_id, category_id, time_frame_id, amount_limit]
+      `INSERT INTO Budget (user_id, name, category_id, time_frame_id, amount_limit)
+       VALUES ($1, $2, $3, $4, $5) RETURNING *`,
+      [user_id, name, category_id, time_frame_id, amount_limit]
     );
 
     console.log('Budget created:', insert.rows[0]);
   } catch (err) {
-    console.error('Error creating budget:', err.message);
+    console.error('Error creating budget:', err);
   }
 }
 
 
 async function createGoal(user_id, name, category_name, time_frame_name, target_amount, start_date, end_date) {
-    console.log({ user_id, name, category_name, time_frame_name, target_amount, start_date, end_date });
   try {
-    const category = await pool.query('SELECT id FROM Category WHERE name = $1', [category_name]);
-    const timeFrame = await pool.query('SELECT id FROM TimeFrame WHERE name = $1', [time_frame_name]);
+    console.log('Creating goal for user:', user_id, '| Goal:', name);
+
+    const category = await pool.query(
+      'SELECT id FROM Category WHERE LOWER(name) = LOWER($1)',
+      [category_name]
+    );
+    const timeFrame = await pool.query(
+      'SELECT id FROM TimeFrame WHERE LOWER(name) = LOWER($1)',
+      [time_frame_name]
+    );
 
     if (category.rows.length === 0 || timeFrame.rows.length === 0) {
       throw new Error('Invalid category or time frame name');
@@ -54,15 +69,16 @@ async function createGoal(user_id, name, category_name, time_frame_name, target_
       [user_id, name, category_id, time_frame_id, target_amount, start_date, end_date]
     );
 
-    console.log(' created:', insert.rows[0]);
+    console.log('Goal created:', insert.rows[0]);
   } catch (err) {
-    console.error('Error creating goal:', err.message);
+    console.error('Error creating goal:', err);
   }
 }
 
+
 async function main() {
-  await createBudget(1, 'Savings', 'bi-weekly', 600);
-  await createGoal(1, 'New Phone', 'Savings', 'yearly', 1000, '2025-06-01', '2025-12-31');
+  await createBudget(6, 'breakfast', 'Food', 'monthly', 5);
+  await createGoal(6, 'Vaginoplasty', 'Transportation', 'weekly', 1000, '2025-06-26', '2025-11-16');
   await pool.end();
 }
 
