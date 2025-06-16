@@ -20,10 +20,6 @@ export const TransactionsScreen = () => {
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
   const [tempCategory, setTempCategory] = useState('');
 
-  const handleDelete = (id: string) => {
-    setTransactionList(prev => prev.filter(t => t.id !== id));
-    setSelectedTransaction(null);
-  };
 
   const openModal = (transaction: Transaction) => {
     if (transaction.type === 'received') return; // no modal for incomes
@@ -82,14 +78,6 @@ export const TransactionsScreen = () => {
                       </TouchableOpacity>
                     ) : null
                   }
-                  renderRightActions={() => (
-                    <TouchableOpacity
-                      style={[styles.swipeAction, styles.deleteAction]}
-                      onPress={() => handleDelete(transaction.id)}
-                    >
-                      <Ionicons name="trash" size={24} color="#fff" />
-                    </TouchableOpacity>
-                  )}
                 >
                   <TouchableOpacity
                     style={styles.transactionItem}
@@ -254,10 +242,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: 80,
     marginBottom: 10,
-  },
-  deleteAction: {
-    backgroundColor: '#FF5555',
-    borderRadius: 10,
   },
   modalSwipeAction: {
     backgroundColor: '#66BB6A',

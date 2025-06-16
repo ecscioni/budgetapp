@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, View, Text, ScrollView, TouchableOpacity, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { transactions } from '../../data/transactions';
+import { goals } from '../../data/goals';
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { CompositeNavigationProp } from '@react-navigation/native';
@@ -74,47 +74,31 @@ const HomeScreen = ({ navigation }: { navigation: HomeScreenProps }) => {
         </TouchableOpacity>
       </View>
 
-      {/* Recent Transactions */}
-      <View style={styles.transactionsSection}>
+      {/* Goals Progress */}
+      <View style={styles.goalsSection}>
         <View style={styles.transactionsHeader}>
-          <Text style={styles.transactionsTitle}>Recent Transactions</Text>
-          <TouchableOpacity onPress={() => navigation.navigate('Transactions')}>
+          <Text style={styles.transactionsTitle}>Goals Progress</Text>
+          <TouchableOpacity onPress={() => navigation.navigate('Goals')}>
             <Text style={styles.viewAllText}>View All</Text>
           </TouchableOpacity>
         </View>
 
-        {transactions.map(transaction => (
-          <View key={transaction.id} style={styles.transactionItem}>
-            <View
-              style={[
-                styles.transactionIconContainer,
-                transaction.type === 'sent' ? styles.sentIcon : styles.receivedIcon,
-              ]}
-            >
-              <Ionicons
-                name={transaction.type === 'sent' ? 'arrow-up' : 'arrow-down'}
-                size={20}
-                color="#FFFFFF"
-              />
-            </View>
-            <View style={styles.transactionDetails}>
-              <Text style={styles.transactionDescription}>
-                {transaction.type === 'sent'
-                  ? `To ${transaction.counterparty}`
-                  : `From ${transaction.counterparty}`} • {transaction.category}
+        {goals.map(goal => {
+          const progress = Math.min(goal.current / goal.target, 1);
+          return (
+            <View key={goal.id} style={styles.goalItem}>
+              <Text style={styles.goalName}>{goal.name}</Text>
+              <View style={styles.progressBar}>
+                <View
+                  style={[styles.progressFill, { width: `${progress * 100}%` }]}
+                />
+              </View>
+              <Text style={styles.goalAmount}>
+                {goal.current}€ / {goal.target}€
               </Text>
-              <Text style={styles.transactionDate}>{transaction.date}</Text>
             </View>
-            <Text
-              style={[
-                styles.transactionAmount,
-                transaction.type === 'sent' ? styles.sentAmount : styles.receivedAmount,
-              ]}
-            >
-              {transaction.amount}
-            </Text>
-          </View>
-        ))}
+          );
+        })}
       </View>
     </ScrollView>
   );
@@ -170,7 +154,7 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 12,
   },
-  transactionsSection: {},
+  goalsSection: {},
   transactionsHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -186,51 +170,33 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: 'gray',
   },
-  transactionItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
+  goalItem: {
     backgroundColor: '#2a2a2a',
     padding: 15,
     borderRadius: 10,
     marginBottom: 10,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-    elevation: 3,
   },
-  transactionIconContainer: {
-    padding: 10,
-    borderRadius: 20,
-    marginRight: 15,
-  },
-  sentIcon: {
-    backgroundColor: '#444444',
-  },
-  receivedIcon: {
-    backgroundColor: '#66BB6A',
-  },
-  transactionDetails: {
-    flex: 1,
-  },
-  transactionDescription: {
+  goalName: {
     color: '#FFFFFF',
     fontSize: 16,
     fontWeight: 'bold',
   },
-  transactionDate: {
+  goalAmount: {
     color: 'gray',
     fontSize: 12,
+    marginTop: 4,
   },
-  transactionAmount: {
-    fontSize: 16,
-    fontWeight: 'bold',
+  progressBar: {
+    height: 8,
+    backgroundColor: '#444444',
+    borderRadius: 4,
+    overflow: 'hidden',
+    marginTop: 8,
   },
-  sentAmount: {
-    color: '#FF5555',
-  },
-  receivedAmount: {
-    color: '#66BB6A',
+  progressFill: {
+    height: '100%',
+    backgroundColor: '#66BB6A',
+    borderRadius: 4,
   },
   cardSection: {
     marginBottom: 20,
