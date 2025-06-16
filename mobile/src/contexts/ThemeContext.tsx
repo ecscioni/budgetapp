@@ -28,7 +28,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         setThemeType(savedTheme as ThemeType);
       }
     } catch (error) {
-      console.error('Erro ao carregar preferência de tema:', error);
+      console.error('Error loading theme:', error);
     }
   };
 
@@ -55,7 +55,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 export const useTheme = () => {
   const context = useContext(ThemeContext);
   if (!context) {
-    throw new Error('useTheme deve ser usado dentro de um ThemeProvider');
+    throw new Error('useTheme should be use inside ThemeProvider');
   }
   return context;
 }; 
