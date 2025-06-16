@@ -1,6 +1,6 @@
 import express from "express"
 import dotenv from "dotenv"
-import {initDB} from "./config/db.js"
+import { initDB } from "./config/db.js"
 import rateLimiter from "./middleware/rateLimiter.js"
 
 import transactionRoute from "./routes/transactionsRoute.js"
@@ -25,7 +25,7 @@ app.use("/api/transactions", transactionRoute);
 
 
 
-initDB(initDB).then(() => {
+initDB().then(() => {
     app.listen(PORT, () => {
         console.log("Server is up and running on PORT:", PORT);
     });
