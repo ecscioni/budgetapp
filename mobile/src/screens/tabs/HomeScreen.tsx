@@ -1,7 +1,7 @@
-import React from 'react';
-import { StyleSheet, View, Text, ScrollView, TouchableOpacity, Image } from 'react-native';
+import React, { useState } from 'react';
+import { StyleSheet, View, Text, ScrollView, TouchableOpacity, Image, Modal, TextInput } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { goals } from '../../data/goals';
+import { goals as initialGoals, Goal } from '../../data/goals';
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { CompositeNavigationProp } from '@react-navigation/native';
@@ -30,7 +30,31 @@ type HomeScreenProps = CompositeNavigationProp<
 
 // Main HomeScreen component
 const HomeScreen = ({ navigation }: { navigation: HomeScreenProps }) => {
+  const [goalList, setGoalList] = useState<Goal[]>(initialGoals);
+  const [selectedGoal, setSelectedGoal] = useState<Goal | null>(null);
+  const [tempCurrent, setTempCurrent] = useState('');
+  const [tempTarget, setTempTarget] = useState('');
+
+  const openModal = (goal: Goal) => {
+    setSelectedGoal(goal);
+    setTempCurrent(goal.current.toString());
+    setTempTarget(goal.target.toString());
+  };
+
+  const saveGoal = () => {
+    if (!selectedGoal) return;
+    setGoalList(prev =>
+      prev.map(g =>
+        g.id === selectedGoal.id
+          ? { ...g, current: parseFloat(tempCurrent) || 0, target: parseFloat(tempTarget) || 0 }
+          : g
+      )
+    );
+    setSelectedGoal(null);
+  };
+
   return (
+    <View style={{ flex: 1 }}>
     <ScrollView style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
@@ -83,10 +107,14 @@ const HomeScreen = ({ navigation }: { navigation: HomeScreenProps }) => {
           </TouchableOpacity>
         </View>
 
-        {goals.map(goal => {
+        {goalList.map(goal => {
           const progress = Math.min(goal.current / goal.target, 1);
           return (
-            <View key={goal.id} style={styles.goalItem}>
+            <TouchableOpacity
+              key={goal.id}
+              style={styles.goalItem}
+              onPress={() => openModal(goal)}
+            >
               <Text style={styles.goalName}>{goal.name}</Text>
               <View style={styles.progressBar}>
                 <View
@@ -96,11 +124,48 @@ const HomeScreen = ({ navigation }: { navigation: HomeScreenProps }) => {
               <Text style={styles.goalAmount}>
                 {goal.current}€ / {goal.target}€
               </Text>
-            </View>
+            </TouchableOpacity>
           );
         })}
       </View>
     </ScrollView>
+    {selectedGoal && (
+      <Modal visible transparent animationType="fade">
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>{selectedGoal.name}</Text>
+            <TextInput
+              style={styles.input}
+              keyboardType="numeric"
+              value={tempCurrent}
+              onChangeText={setTempCurrent}
+              placeholder="Current Amount"
+              placeholderTextColor="#aaa"
+            />
+            <TextInput
+              style={styles.input}
+              keyboardType="numeric"
+              value={tempTarget}
+              onChangeText={setTempTarget}
+              placeholder="Target Amount"
+              placeholderTextColor="#aaa"
+            />
+            <View style={styles.modalActions}>
+              <TouchableOpacity style={styles.saveButton} onPress={saveGoal}>
+                <Text style={styles.actionText}>Save</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.cancelButton}
+                onPress={() => setSelectedGoal(null)}
+              >
+                <Text style={styles.actionText}>Cancel</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+    )}
+    </View>
   );
 };
 
@@ -205,5 +270,56 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 200,
     borderRadius: 15,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContent: {
+    backgroundColor: '#2a2a2a',
+    padding: 24,
+    borderRadius: 20,
+    width: '85%',
+  },
+  modalTitle: {
+    color: '#FFFFFF',
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 20,
+    textAlign: 'center',
+  },
+  input: {
+    backgroundColor: '#333333',
+    color: 'white',
+    borderRadius: 8,
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    marginBottom: 15,
+  },
+  modalActions: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 10,
+  },
+  saveButton: {
+    backgroundColor: '#66BB6A',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  cancelButton: {
+    backgroundColor: '#888',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  actionText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontWeight: '600',
   },
 });
