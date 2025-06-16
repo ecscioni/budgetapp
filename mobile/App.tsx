@@ -104,7 +104,12 @@ export default function App() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <View style={styles.container} onLayout={onLayoutRootView}>
         <NavigationContainer>
-          <Stack.Navigator screenOptions={{ headerShown: false }}>
+          <Stack.Navigator screenOptions={{ 
+            headerShown: false,
+            gestureEnabled: false,
+            gestureDirection: 'horizontal',
+            animation: 'none'
+          }}>
             <Stack.Screen name="Inicial" component={InicialScreen} />
             <Stack.Screen name="Login" component={LoginScreen} />
             <Stack.Screen name="Register" component={RegisterScreen} />
