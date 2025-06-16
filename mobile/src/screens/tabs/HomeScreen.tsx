@@ -32,11 +32,19 @@ type HomeScreenProps = CompositeNavigationProp<
 const HomeScreen = ({ navigation }: { navigation: HomeScreenProps }) => {
   const [goalList, setGoalList] = useState<Goal[]>(initialGoals);
   const [selectedGoal, setSelectedGoal] = useState<Goal | null>(null);
+  const [tempName, setTempName] = useState('');
   const [tempCurrent, setTempCurrent] = useState('');
   const [tempTarget, setTempTarget] = useState('');
 
+  // Modal state for adding new goals
+  const [addModalVisible, setAddModalVisible] = useState(false);
+  const [newName, setNewName] = useState('');
+  const [newCurrent, setNewCurrent] = useState('0');
+  const [newTarget, setNewTarget] = useState('');
+
   const openModal = (goal: Goal) => {
     setSelectedGoal(goal);
+    setTempName(goal.name);
     setTempCurrent(goal.current.toString());
     setTempTarget(goal.target.toString());
   };
@@ -46,11 +54,32 @@ const HomeScreen = ({ navigation }: { navigation: HomeScreenProps }) => {
     setGoalList(prev =>
       prev.map(g =>
         g.id === selectedGoal.id
-          ? { ...g, current: parseFloat(tempCurrent) || 0, target: parseFloat(tempTarget) || 0 }
+          ? {
+              ...g,
+              name: tempName,
+              current: parseFloat(tempCurrent) || 0,
+              target: parseFloat(tempTarget) || 0,
+            }
           : g
       )
     );
     setSelectedGoal(null);
+  };
+
+  const addGoal = () => {
+    setGoalList(prev => [
+      ...prev,
+      {
+        id: Date.now().toString(),
+        name: newName || `Goal ${prev.length + 1}`,
+        current: parseFloat(newCurrent) || 0,
+        target: parseFloat(newTarget) || 0,
+      },
+    ]);
+    setAddModalVisible(false);
+    setNewName('');
+    setNewCurrent('0');
+    setNewTarget('');
   };
 
   return (
@@ -83,7 +112,7 @@ const HomeScreen = ({ navigation }: { navigation: HomeScreenProps }) => {
           <Text style={styles.buttonText}>Create budget</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Goals')}>
+        <TouchableOpacity style={styles.button} onPress={() => setAddModalVisible(true)}>
           <View style={styles.buttonIconContainer}>
             <Ionicons name="repeat" size={24} color="#4CAF50" />
           </View>
@@ -133,7 +162,14 @@ const HomeScreen = ({ navigation }: { navigation: HomeScreenProps }) => {
       <Modal visible transparent animationType="fade">
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>{selectedGoal.name}</Text>
+            <Text style={styles.modalTitle}>Edit Goal</Text>
+            <TextInput
+              style={styles.input}
+              value={tempName}
+              onChangeText={setTempName}
+              placeholder="Goal Name"
+              placeholderTextColor="#aaa"
+            />
             <TextInput
               style={styles.input}
               keyboardType="numeric"
@@ -157,6 +193,50 @@ const HomeScreen = ({ navigation }: { navigation: HomeScreenProps }) => {
               <TouchableOpacity
                 style={styles.cancelButton}
                 onPress={() => setSelectedGoal(null)}
+              >
+                <Text style={styles.actionText}>Cancel</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+    )}
+
+    {addModalVisible && (
+      <Modal visible transparent animationType="fade">
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Add Goal</Text>
+            <TextInput
+              style={styles.input}
+              value={newName}
+              onChangeText={setNewName}
+              placeholder="Goal Name"
+              placeholderTextColor="#aaa"
+            />
+            <TextInput
+              style={styles.input}
+              keyboardType="numeric"
+              value={newCurrent}
+              onChangeText={setNewCurrent}
+              placeholder="Current Amount"
+              placeholderTextColor="#aaa"
+            />
+            <TextInput
+              style={styles.input}
+              keyboardType="numeric"
+              value={newTarget}
+              onChangeText={setNewTarget}
+              placeholder="Target Amount"
+              placeholderTextColor="#aaa"
+            />
+            <View style={styles.modalActions}>
+              <TouchableOpacity style={styles.saveButton} onPress={addGoal}>
+                <Text style={styles.actionText}>Add</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.cancelButton}
+                onPress={() => setAddModalVisible(false)}
               >
                 <Text style={styles.actionText}>Cancel</Text>
               </TouchableOpacity>
