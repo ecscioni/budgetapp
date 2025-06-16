@@ -8,7 +8,6 @@ router.get("/:user_id", getTransactionByUserId)
 
 router.post("/", createTransaction)
 
-
 router.delete("/:id", deleteTransaction)
 
 router.get("/summary/:user_id", getSummaryByUserId)
