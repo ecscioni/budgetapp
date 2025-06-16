@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { StyleSheet, View, Text, ScrollView, TouchableOpacity, Image, Modal, TextInput } from 'react-native';
+import { Swipeable } from 'react-native-gesture-handler';
 import { Ionicons } from '@expo/vector-icons';
 import { goals as initialGoals, Goal } from '../../data/goals';
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
@@ -82,6 +83,10 @@ const HomeScreen = ({ navigation }: { navigation: HomeScreenProps }) => {
     setNewTarget('');
   };
 
+  const deleteGoal = (id: string) => {
+    setGoalList(prev => prev.filter(g => g.id !== id));
+  };
+
   return (
     <View style={{ flex: 1 }}>
     <ScrollView style={styles.container}>
@@ -139,21 +144,32 @@ const HomeScreen = ({ navigation }: { navigation: HomeScreenProps }) => {
         {goalList.map(goal => {
           const progress = Math.min(goal.current / goal.target, 1);
           return (
-            <TouchableOpacity
+            <Swipeable
               key={goal.id}
-              style={styles.goalItem}
-              onPress={() => openModal(goal)}
+              renderRightActions={() => (
+                <TouchableOpacity
+                  style={[styles.swipeAction, styles.deleteSwipeAction]}
+                  onPress={() => deleteGoal(goal.id)}
+                >
+                  <Ionicons name="trash-outline" size={24} color="#fff" />
+                </TouchableOpacity>
+              )}
             >
-              <Text style={styles.goalName}>{goal.name}</Text>
-              <View style={styles.progressBar}>
-                <View
-                  style={[styles.progressFill, { width: `${progress * 100}%` }]}
-                />
-              </View>
-              <Text style={styles.goalAmount}>
-                {goal.current}€ / {goal.target}€
-              </Text>
-            </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.goalItem}
+                onPress={() => openModal(goal)}
+              >
+                <Text style={styles.goalName}>{goal.name}</Text>
+                <View style={styles.progressBar}>
+                  <View
+                    style={[styles.progressFill, { width: `${progress * 100}%` }]}
+                  />
+                </View>
+                <Text style={styles.goalAmount}>
+                  {goal.current}€ / {goal.target}€
+                </Text>
+              </TouchableOpacity>
+            </Swipeable>
           );
         })}
       </View>
@@ -320,6 +336,16 @@ const styles = StyleSheet.create({
     padding: 15,
     borderRadius: 10,
     marginBottom: 10,
+  },
+  swipeAction: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: 80,
+    marginBottom: 10,
+  },
+  deleteSwipeAction: {
+    backgroundColor: '#FF5555',
+    borderRadius: 10,
   },
   goalName: {
     color: '#FFFFFF',
