@@ -136,13 +136,11 @@ const HomeScreen = ({ navigation }: { navigation: HomeScreenProps }) => {
       <View style={styles.goalsSection}>
         <View style={styles.transactionsHeader}>
           <Text style={styles.transactionsTitle}>Goals Progress</Text>
-          <TouchableOpacity onPress={() => navigation.navigate('Goals')}>
-            <Text style={styles.viewAllText}>View All</Text>
-          </TouchableOpacity>
         </View>
 
         {goalList.map(goal => {
           const progress = Math.min(goal.current / goal.target, 1);
+          const completed = progress >= 1;
           return (
             <Swipeable
               key={goal.id}
@@ -156,10 +154,15 @@ const HomeScreen = ({ navigation }: { navigation: HomeScreenProps }) => {
               )}
             >
               <TouchableOpacity
-                style={styles.goalItem}
+                style={[styles.goalItem, completed && styles.goalCompleted]}
                 onPress={() => openModal(goal)}
               >
-                <Text style={styles.goalName}>{goal.name}</Text>
+                <View style={styles.goalHeader}>
+                  <Text style={styles.goalName}>{goal.name}</Text>
+                  {completed && (
+                    <Ionicons name="checkmark-circle" size={20} color="#66BB6A" />
+                  )}
+                </View>
                 <View style={styles.progressBar}>
                   <View
                     style={[styles.progressFill, { width: `${progress * 100}%` }]}
@@ -327,15 +330,21 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#66BB6A',
   },
-  viewAllText: {
-    fontSize: 14,
-    color: 'gray',
-  },
   goalItem: {
     backgroundColor: '#2a2a2a',
     padding: 15,
     borderRadius: 10,
     marginBottom: 10,
+  },
+  goalCompleted: {
+    backgroundColor: '#304830',
+    borderColor: '#66BB6A',
+    borderWidth: 2,
+  },
+  goalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   swipeAction: {
     justifyContent: 'center',
