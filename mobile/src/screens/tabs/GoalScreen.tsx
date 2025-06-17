@@ -1,18 +1,26 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Button, TextInput } from 'react-native';
+import {
+  View,
+  Text,
+  TextInput,
+  StyleSheet,
+  TouchableOpacity,
+} from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
 
 export const GoalScreen = () => {
   const [goalName, setGoalName] = useState('');
   const [amount, setAmount] = useState('');
-  const [category, setCategory] = useState('Plane ticket');
+  const [category, setCategory] = useState('Vacation');
   const [recurrency, setRecurrency] = useState('Monthly');
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
 
   const [showStartPicker, setShowStartPicker] = useState(false);
   const [showEndPicker, setShowEndPicker] = useState(false);
+  const [showCategoryPicker, setShowCategoryPicker] = useState(false);
+  const [showRecurrencyPicker, setShowRecurrencyPicker] = useState(false);
 
   const handleCreateGoal = () => {
     const goalData = {
@@ -28,51 +36,84 @@ export const GoalScreen = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Create Your Goals</Text>
+      <Text style={styles.title}>Create Your Goal</Text>
+
       <View style={styles.inputBox}>
         <TextInput
-          style={styles.text}
-          placeholder='Goal name'
-          placeholderTextColor="#aaa"
+          style={styles.input}
+          placeholder="Goal Name"
           value={goalName}
           onChangeText={setGoalName}
+          placeholderTextColor="white"
         />
+
         <TextInput
-          style={styles.text}
-          placeholder='Amount'
-          placeholderTextColor="#aaa"
+          style={styles.input}
+          placeholder="Amount"
           value={amount}
           onChangeText={setAmount}
-          keyboardType='numeric'
+          keyboardType="numeric"
+          placeholderTextColor="white"
         />
 
-        <Text style={styles.text}>Category:</Text>
-        <Picker
-          selectedValue={category}
-          onValueChange={(itemValue) => setCategory(itemValue)}
+        <TouchableOpacity
+          style={styles.pickerButtonRow}
+          onPress={() => setShowCategoryPicker(true)}
         >
-          <Picker.Item label="Vacation" value="Vacation" />
-          <Picker.Item label="To buy a car" value="Car" />
-          <Picker.Item label="Emergency" value="Emergency" />
-          <Picker.Item label="Entertainment" value="Entertainment" />
-          <Picker.Item label="Pay off debt" value="Debt" />
-          <Picker.Item label="Other" value="Other" />
-        </Picker>
+          <Text style={styles.pickerText}>{category}</Text>
+          <Text style={styles.chevronIcon}>▼</Text>
+        </TouchableOpacity>
 
-        <Text style={styles.text}>Recurrency:</Text>
-        <Picker
-          selectedValue={recurrency}
-          onValueChange={(itemValue) => setRecurrency(itemValue)}
+        {showCategoryPicker && (
+          <View style={styles.pickerModal}>
+            <Picker
+              selectedValue={category}
+              onValueChange={(value) => {
+                setCategory(value);
+                setShowCategoryPicker(false);
+              }}
+              dropdownIconColor="white"
+            >
+              <Picker.Item label="Vacation" value="Vacation" />
+              <Picker.Item label="To buy a car" value="Car" />
+              <Picker.Item label="Emergency" value="Emergency" />
+              <Picker.Item label="Entertainment" value="Entertainment" />
+              <Picker.Item label="Pay off debt" value="Debt" />
+              <Picker.Item label="Other" value="Other" />
+            </Picker>
+          </View>
+        )}
+
+        <TouchableOpacity
+          style={styles.pickerButtonRow}
+          onPress={() => setShowRecurrencyPicker(true)}
         >
-          <Picker.Item label="Daily" value="Daily" />
-          <Picker.Item label="Weekly" value="Weekly" />
-          <Picker.Item label="Monthly" value="Monthly" />
-          <Picker.Item label="Yearly" value="Yearly" />
-        </Picker>
+          <Text style={styles.pickerText}>{recurrency}</Text>
+          <Text style={styles.chevronIcon}>▼</Text>
+        </TouchableOpacity>
 
-        {/* Start Date */}
+        {showRecurrencyPicker && (
+          <View style={styles.pickerModal}>
+            <Picker
+              selectedValue={recurrency}
+              onValueChange={(value) => {
+                setRecurrency(value);
+                setShowRecurrencyPicker(false);
+              }}
+              dropdownIconColor="white"
+            >
+              <Picker.Item label="Daily" value="Daily" />
+              <Picker.Item label="Weekly" value="Weekly" />
+              <Picker.Item label="Monthly" value="Monthly" />
+              <Picker.Item label="Yearly" value="Yearly" />
+            </Picker>
+          </View>
+        )}
+
         <TouchableOpacity onPress={() => setShowStartPicker(true)}>
-          <Text style={styles.text}>Start Date: {startDate.toDateString()}</Text>
+          <Text style={styles.dateText}>
+            Start Date: {startDate.toDateString()}
+          </Text>
         </TouchableOpacity>
 
         {showStartPicker && (
@@ -87,9 +128,10 @@ export const GoalScreen = () => {
           />
         )}
 
-        {/* End Date */}
         <TouchableOpacity onPress={() => setShowEndPicker(true)}>
-          <Text style={styles.text}>End Date: {endDate.toDateString()}</Text>
+          <Text style={styles.dateText}>
+            End Date: {endDate.toDateString()}
+          </Text>
         </TouchableOpacity>
 
         {showEndPicker && (
@@ -103,9 +145,11 @@ export const GoalScreen = () => {
             }}
           />
         )}
-
-        <Button title="Create Goal" onPress={handleCreateGoal} />
       </View>
+
+      <TouchableOpacity style={styles.customButton} onPress={handleCreateGoal}>
+        <Text style={styles.buttonText}>Create Goal</Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -113,29 +157,78 @@ export const GoalScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#222222',
-    alignItems: 'center',
-    justifyContent: 'center',
+    padding: 20,
+    backgroundColor: '#1f1f1f',
   },
   title: {
-    fontSize: 24,
+    fontSize: 22,
     fontWeight: 'bold',
-    color: '#48BF73',
-    marginBottom: 20,
+    color: 'green',
+    marginTop: 90,
+    textAlign: 'center',
   },
   inputBox: {
     borderRadius: 10,
-    borderColor: 'white',
+    borderColor: '#48BF73',
     padding: 10,
     width: '90%',
-  },
-  text: {
-    fontSize: 18,
+    backgroundColor: '#333333',
+    marginBottom: 20,
+    alignSelf: 'center',
+    borderWidth: 1,
     fontWeight: 'bold',
+    marginTop: 100,
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    padding: 5,
+    marginBottom: 15,
+    borderRadius: 8,
     color: 'white',
-    marginVertical: 6,
-    borderBottomWidth: 1,
-    borderColor: '#555',
-    padding: 6,
+    backgroundColor: '#333333',
+  },
+  pickerButtonRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    backgroundColor: '#333333',
+    padding: 12,
+    borderRadius: 10,
+    borderColor: '#ccc',
+    borderWidth: 1,
+    marginBottom: 15,
+    alignItems: 'center',
+  },
+  pickerText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  chevronIcon: {
+    color: 'white',
+    fontSize: 16,
+  },
+  pickerModal: {
+    backgroundColor: '#333333',
+    borderRadius: 10,
+    marginBottom: 15,
+  },
+  dateText: {
+    paddingVertical: 10,
+    fontSize: 16,
+    color: 'white',
+    fontWeight: 'bold',
+  },
+  customButton: {
+    backgroundColor: '#48BF73',
+    paddingVertical: 14,
+    paddingHorizontal: 30,
+    borderRadius: 10,
+    alignSelf: 'center',
+  },
+  buttonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 16,
   },
 });

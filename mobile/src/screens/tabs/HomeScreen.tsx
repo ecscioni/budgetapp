@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
-import { StyleSheet, View, Text, ScrollView, TouchableOpacity, Image, Modal, TextInput } from 'react-native';
+import React, { useState, useRef } from 'react';
+import { StyleSheet, View, Text, ScrollView, TouchableOpacity, Image, Modal, TextInput, FlatList, Dimensions } from 'react-native';
 import { Swipeable } from 'react-native-gesture-handler';
 import { Ionicons } from '@expo/vector-icons';
 import { goals as initialGoals, Goal } from '../../data/goals';
+import { useCards } from '../../contexts/CardsContext';
+import CardItem from './CardItem';
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { CompositeNavigationProp } from '@react-navigation/native';
@@ -29,19 +31,35 @@ type HomeScreenProps = CompositeNavigationProp<
   NativeStackNavigationProp<RootStackParamList>
 >;
 
+const SCREEN_WIDTH = Dimensions.get('window').width;
+const CARD_WIDTH = SCREEN_WIDTH - 30;
+const SNAP_INTERVAL = SCREEN_WIDTH;
+
 // Main HomeScreen component
 const HomeScreen = ({ navigation }: { navigation: HomeScreenProps }) => {
+  const { cards } = useCards();
   const [goalList, setGoalList] = useState<Goal[]>(initialGoals);
   const [selectedGoal, setSelectedGoal] = useState<Goal | null>(null);
   const [tempName, setTempName] = useState('');
   const [tempCurrent, setTempCurrent] = useState('');
   const [tempTarget, setTempTarget] = useState('');
+  const [selectedCardIndex, setSelectedCardIndex] = useState(0);
+  const flatListRef = useRef<FlatList>(null);
 
   // Modal state for adding new goals
   const [addModalVisible, setAddModalVisible] = useState(false);
   const [newName, setNewName] = useState('');
   const [newCurrent, setNewCurrent] = useState('0');
   const [newTarget, setNewTarget] = useState('');
+
+  // Filter only real cards (exclude the "add" card)
+  const realCards = cards.filter(card => !card.isAddCard);
+
+  const handleMomentumScrollEnd = (event: any) => {
+    const offsetX = event.nativeEvent.contentOffset.x;
+    const newIndex = Math.round(offsetX / SNAP_INTERVAL);
+    setSelectedCardIndex(newIndex);
+  };
 
   const openModal = (goal: Goal) => {
     setSelectedGoal(goal);
@@ -99,13 +117,51 @@ const HomeScreen = ({ navigation }: { navigation: HomeScreenProps }) => {
         </View>
       </View>
 
-      {/* Credit Card Section */}
+      {/* Credit Cards Section */}
       <View style={styles.cardSection}>
-        <Image
-          source={{ uri: 'https://imgur.com/3u4JHkm.png' }}
-          style={styles.creditCardImage}
-          resizeMode="contain"
-        />
+        {realCards.length > 0 ? (
+          <View style={styles.cardCarouselContainer}>
+            <FlatList
+              ref={flatListRef}
+              data={realCards}
+              keyExtractor={item => item.id}
+              renderItem={({ item }) => (
+                <TouchableOpacity 
+                  style={styles.cardItem}
+                  onPress={() => navigation.navigate('Cards')}
+                >
+                  <CardItem
+                    cardNumber={item.cardNumber}
+                    holderName={item.holderName}
+                    expiry={item.expiry}
+                    cvc={item.cvc}
+                    isAddCard={false}
+                    imageUrl={item.imageUrl}
+                    style={styles.homeCardStyle}
+                  />
+                </TouchableOpacity>
+              )}
+              showsHorizontalScrollIndicator={false}
+              horizontal
+              pagingEnabled={true}
+              decelerationRate="fast"
+              style={{ flexGrow: 0, width: SCREEN_WIDTH }}
+              contentContainerStyle={{ paddingHorizontal: 20 }}
+              onMomentumScrollEnd={handleMomentumScrollEnd}
+              getItemLayout={(_, index) => ({ length: SNAP_INTERVAL, offset: SNAP_INTERVAL * index, index })}
+              initialScrollIndex={0}
+            />
+          </View>
+        ) : (
+          <TouchableOpacity 
+            style={styles.noCardsContainer}
+            onPress={() => navigation.navigate('Cards')}
+          >
+            <Ionicons name="card-outline" size={48} color="#666" />
+            <Text style={styles.noCardsText}>No cards added yet</Text>
+            <Text style={styles.noCardsSubtext}>Tap to add your first card</Text>
+          </TouchableOpacity>
+        )}
       </View>
 
       {/* Quick Action Buttons */}
@@ -283,8 +339,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 20,
-    marginTop: 20,
+    marginBottom: 10,
+    marginTop: 25,
   },
   headerTitle: {
     fontSize: 18,
@@ -319,6 +375,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
   goalsSection: {},
+
   transactionsHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -379,12 +436,54 @@ const styles = StyleSheet.create({
     borderRadius: 4,
   },
   cardSection: {
-    marginBottom: 20,
+    marginBottom: 10,
   },
-  creditCardImage: {
+  sectionTitle: {
+    color: '#FFFFFF',
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  cardCarouselContainer: {
+    height: 220,
     width: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  cardItem: {
+    width: CARD_WIDTH,
+    height: 330,
+    borderRadius: 15,
+    overflow: 'hidden',
+    marginHorizontal: 0,
+  },
+  homeCardStyle: {
+    width: CARD_WIDTH,
     height: 200,
     borderRadius: 15,
+    marginRight: 19,
+  },
+  noCardsContainer: {
+    backgroundColor: '#2a2a2a',
+    padding: 30,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#444',
+    alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: 120,
+  },
+  noCardsText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginTop: 10,
+    marginBottom: 5,
+  },
+  noCardsSubtext: {
+    color: '#888',
+    fontSize: 12,
   },
   modalOverlay: {
     flex: 1,
