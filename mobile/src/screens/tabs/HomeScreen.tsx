@@ -436,7 +436,7 @@ const styles = StyleSheet.create({
     borderRadius: 4,
   },
   cardSection: {
-    marginBottom: 0,
+    marginBottom: 10,
   },
   sectionTitle: {
     color: '#FFFFFF',
