@@ -1,9 +1,11 @@
 import express from "express"
 import dotenv from "dotenv"
+import cors from "cors"
 import { initDB } from "./config/db.js"
 import rateLimiter from "./middleware/rateLimiter.js"
 
 import transactionRoute from "./routes/transactionsRoute.js"
+import goalsRoute from "./routes/goalsRoute.js"
 
 dotenv.config();
 
@@ -14,6 +16,7 @@ const PORT= process.env.PORT || 5001;
 // middleware
 app.use(rateLimiter);
 app.use(express.json());
+app.use(cors());
 
 
 
@@ -22,6 +25,7 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api/transactions", transactionRoute);
+app.use("/api/goals", goalsRoute);
 
 
 

@@ -74,6 +74,11 @@ npm install
 npm run dev
 ```
 
+Create a `.env` file in the project root based on `.env.example` and fill in your
+database credentials and API keys before starting the server. For the mobile app
+to reach the backend, set `EXPO_PUBLIC_API_URL` to the LAN address of your
+computer, e.g. `http://192.168.1.100:5001`.
+
 ## 📲 Expo Preview
 
 This app runs on **Expo Go**. To preview on your phone:
