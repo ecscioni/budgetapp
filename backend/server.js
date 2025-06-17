@@ -4,6 +4,7 @@ import {initDB} from "./config/db.js"
 import rateLimiter from "./middleware/rateLimiter.js"
 
 import transactionRoute from "./routes/transactionsRoute.js"
+import goalsRoute from "./routes/goalsRoute.js"
 
 dotenv.config();
 
@@ -22,6 +23,7 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api/transactions", transactionRoute);
+app.use("/api/goals", goalsRoute);
 
 
 
