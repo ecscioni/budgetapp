@@ -132,6 +132,7 @@ export const CardsScreen = () => {
   };
 
   const card = cards[selectedIndex];
+  const realCards = cards.filter(card => !card.isAddCard);
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -147,115 +148,129 @@ export const CardsScreen = () => {
             )}
           </View>
         </View>
-        <View style={styles.cardCarouselContainer}>
-          <FlatList
-            ref={flatListRef}
-            data={cards}
-            keyExtractor={item => item.id}
-            renderItem={({ item }) => (
-              <CardItem
-                cardNumber={item.cardNumber}
-                holderName={item.holderName}
-                expiry={item.expiry}
-                cvc={item.cvc}
-                isAddCard={item.isAddCard}
-                imageUrl={item.imageUrl}
-                style={{ width: CARD_WIDTH }}
-              />
-            )}
-            showsHorizontalScrollIndicator={false}
-            horizontal
-            pagingEnabled={true}
-            decelerationRate="fast"
-            style={{ flexGrow: 0, width: SCREEN_WIDTH }}
-            contentContainerStyle={{ paddingHorizontal: 15 }}
-            onMomentumScrollEnd={handleMomentumScrollEnd}
-            getItemLayout={(_, index) => ({ length: SNAP_INTERVAL, offset: SNAP_INTERVAL * index, index })}
-            initialScrollIndex={0}
-          />
-        </View>
-        {card.isAddCard ? (
-          <View style={styles.infoSection}>
-            <View style={styles.infoCardElegant}>
-              <Text style={styles.infoTitleElegant}>CARD INFORMATIONS</Text>
-              <View style={styles.infoField}>
-                <Text style={styles.infoLabelElegant}>Number</Text>
-                <TextInput
-                  style={styles.infoValueInput}
-                  placeholder="**** **** **** ****"
-                  placeholderTextColor="#888"
-                  keyboardType="numeric"
-                  value={newCardNumber}
-                  onChangeText={handleCardNumberChange}
-                  maxLength={19} // 16 digits + 3 spaces
-                />
-              </View>
-              <View style={styles.infoField}>
-                <Text style={styles.infoLabelElegant}>Name</Text>
-                <TextInput
-                  style={styles.infoValueInput}
-                  placeholder="CARD HOLDERNAME"
-                  placeholderTextColor="#888"
-                  value={newHolderName}
-                  onChangeText={setNewHolderName}
-                />
-              </View>
-              <View style={[styles.infoField, { flexDirection: 'row', justifyContent: 'space-between', gap: 24 }]}> 
-                <View style={{ flex: 1 }}>
-                  <Text style={styles.infoLabelElegant}>Validity</Text>
-                  <TextInput
-                    style={styles.infoValueInput}
-                    placeholder="MM/AA"
-                    placeholderTextColor="#888"
-                    keyboardType="numeric"
-                    value={newExpiry}
-                    onChangeText={handleExpiryChange}
-                    maxLength={5} // MM/YY
-                  />
-                </View>
-                <View style={{ flex: 1 }}>
-                  <Text style={styles.infoLabelElegant}>CVC</Text>
-                  <TextInput
-                    style={styles.infoValueInput}
-                    placeholder="***"
-                    placeholderTextColor="#888"
-                    keyboardType="numeric"
-                    value={newCvc}
-                    onChangeText={setNewCvc}
-                    maxLength={3}
-                    secureTextEntry
-                  />
-                </View>
-              </View>
-              <TouchableOpacity style={styles.addButton} onPress={handleAddCard}>
-                <Text style={styles.addButtonText}>Add Card</Text>
-              </TouchableOpacity>
-            </View>
+        
+        {realCards.length === 0 ? (
+          <View style={styles.noCardsContainer}>
+            <Ionicons name="card-outline" size={80} color="#666" />
+            <Text style={styles.noCardsTitle}>No Cards Yet</Text>
+            <Text style={styles.noCardsSubtitle}>Add your first card to get started</Text>
+            <TouchableOpacity style={styles.addFirstCardButton} onPress={() => setSelectedIndex(cards.length - 1)}>
+              <Text style={styles.addFirstCardButtonText}>Add Your First Card</Text>
+            </TouchableOpacity>
           </View>
         ) : (
-          <View style={styles.infoSection}>
-            <View style={styles.infoCardElegant}>
-              <Text style={styles.infoTitleElegant}>CARD INFORMATIONS</Text>
-              <View style={styles.infoField}>
-                <Text style={styles.infoLabelElegant}>Number</Text>
-                <Text style={styles.infoValueElegant}>{card.cardNumber || '**** **** **** ****'}</Text>
-              </View>
-              <View style={styles.infoField}>
-                <Text style={styles.infoLabelElegant}>Name</Text>
-                <Text style={styles.infoValueElegant}>{card.holderName || '-'}</Text>
-              </View>
-              <View style={[styles.infoField, { flexDirection: 'row', justifyContent: 'space-between', gap: 24 }]}> 
-                <View>
-                  <Text style={styles.infoLabelElegant}>Validity</Text>
-                  <Text style={styles.infoValueElegant}>{card.expiry || '--/--'}</Text>
-                </View>
-                <View>
-                  <Text style={styles.infoLabelElegant}>CVC</Text>
-                  <Text style={styles.infoValueElegant}>{card.cvc || '---'}</Text>
-                </View>
-              </View>
+          <>
+            <View style={styles.cardCarouselContainer}>
+              <FlatList
+                ref={flatListRef}
+                data={cards}
+                keyExtractor={item => item.id}
+                renderItem={({ item }) => (
+                  <CardItem
+                    cardNumber={item.cardNumber}
+                    holderName={item.holderName}
+                    expiry={item.expiry}
+                    cvc={item.cvc}
+                    isAddCard={item.isAddCard}
+                    imageUrl={item.imageUrl}
+                    style={{ width: CARD_WIDTH }}
+                  />
+                )}
+                showsHorizontalScrollIndicator={false}
+                horizontal
+                pagingEnabled={true}
+                decelerationRate="fast"
+                style={{ flexGrow: 0, width: SCREEN_WIDTH }}
+                contentContainerStyle={{ paddingHorizontal: 15 }}
+                onMomentumScrollEnd={handleMomentumScrollEnd}
+                getItemLayout={(_, index) => ({ length: SNAP_INTERVAL, offset: SNAP_INTERVAL * index, index })}
+                initialScrollIndex={0}
+              />
             </View>
-          </View>
+            {card.isAddCard ? (
+              <View style={styles.infoSection}>
+                <View style={styles.infoCardElegant}>
+                  <Text style={styles.infoTitleElegant}>CARD INFORMATIONS</Text>
+                  <View style={styles.infoField}>
+                    <Text style={styles.infoLabelElegant}>Number</Text>
+                    <TextInput
+                      style={styles.infoValueInput}
+                      placeholder="**** **** **** ****"
+                      placeholderTextColor="#888"
+                      keyboardType="numeric"
+                      value={newCardNumber}
+                      onChangeText={handleCardNumberChange}
+                      maxLength={19} // 16 digits + 3 spaces
+                    />
+                  </View>
+                  <View style={styles.infoField}>
+                    <Text style={styles.infoLabelElegant}>Name</Text>
+                    <TextInput
+                      style={styles.infoValueInput}
+                      placeholder="CARD HOLDERNAME"
+                      placeholderTextColor="#888"
+                      value={newHolderName}
+                      onChangeText={setNewHolderName}
+                    />
+                  </View>
+                  <View style={[styles.infoField, { flexDirection: 'row', justifyContent: 'space-between', gap: 24 }]}> 
+                    <View style={{ flex: 1 }}>
+                      <Text style={styles.infoLabelElegant}>Validity</Text>
+                      <TextInput
+                        style={styles.infoValueInput}
+                        placeholder="MM/AA"
+                        placeholderTextColor="#888"
+                        keyboardType="numeric"
+                        value={newExpiry}
+                        onChangeText={handleExpiryChange}
+                        maxLength={5} // MM/YY
+                      />
+                    </View>
+                    <View style={{ flex: 1 }}>
+                      <Text style={styles.infoLabelElegant}>CVC</Text>
+                      <TextInput
+                        style={styles.infoValueInput}
+                        placeholder="***"
+                        placeholderTextColor="#888"
+                        keyboardType="numeric"
+                        value={newCvc}
+                        onChangeText={setNewCvc}
+                        maxLength={3}
+                        secureTextEntry
+                      />
+                    </View>
+                  </View>
+                  <TouchableOpacity style={styles.addButton} onPress={handleAddCard}>
+                    <Text style={styles.addButtonText}>Add Card</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            ) : (
+              <View style={styles.infoSection}>
+                <View style={styles.infoCardElegant}>
+                  <Text style={styles.infoTitleElegant}>CARD INFORMATIONS</Text>
+                  <View style={styles.infoField}>
+                    <Text style={styles.infoLabelElegant}>Number</Text>
+                    <Text style={styles.infoValueElegant}>{card.cardNumber || '**** **** **** ****'}</Text>
+                  </View>
+                  <View style={styles.infoField}>
+                    <Text style={styles.infoLabelElegant}>Name</Text>
+                    <Text style={styles.infoValueElegant}>{card.holderName || '-'}</Text>
+                  </View>
+                  <View style={[styles.infoField, { flexDirection: 'row', justifyContent: 'space-between', gap: 24 }]}> 
+                    <View>
+                      <Text style={styles.infoLabelElegant}>Validity</Text>
+                      <Text style={styles.infoValueElegant}>{card.expiry || '--/--'}</Text>
+                    </View>
+                    <View>
+                      <Text style={styles.infoLabelElegant}>CVC</Text>
+                      <Text style={styles.infoValueElegant}>{card.cvc || '---'}</Text>
+                    </View>
+                  </View>
+                </View>
+              </View>
+            )}
+          </>
         )}
 
         {/* Card Management Modal */}
@@ -461,5 +476,43 @@ const styles = StyleSheet.create({
   },
   deleteButtonText: {
     color: '#fff',
+  },
+  noCardsContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 40,
+  },
+  noCardsTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#fff',
+    marginTop: 20,
+    marginBottom: 10,
+  },
+  noCardsSubtitle: {
+    fontSize: 16,
+    color: '#888',
+    textAlign: 'center',
+    marginBottom: 30,
+  },
+  addFirstCardButton: {
+    backgroundColor: '#48BF73',
+    borderRadius: 12,
+    paddingVertical: 14,
+    paddingHorizontal: 24,
+    marginTop: 20,
+    alignItems: 'center',
+    shadowColor: '#48BF73',
+    shadowOpacity: 0.4,
+    shadowRadius: 8,
+    elevation: 6,
+    minWidth: 200,
+  },
+  addFirstCardButtonText: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: 'bold',
+    letterSpacing: 1,
   },
 }); 
