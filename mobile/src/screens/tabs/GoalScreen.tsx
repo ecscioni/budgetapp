@@ -15,21 +15,15 @@ export const GoalScreen = () => {
   const [showEndPicker, setShowEndPicker] = useState(false);
 
   const handleCreateGoal = () => {
-    fetch('http://localhost:5001/api/goals', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        user_id: '1',
-        name: goalName,
-        current: 0,
-        target: parseFloat(amount) || 0,
-      }),
-    })
-      .then(() => {
-        setGoalName('');
-        setAmount('');
-      })
-      .catch(err => console.log('Error creating goal', err));
+    const goalData = {
+      goalName,
+      amount,
+      category,
+      recurrency,
+      startDate,
+      endDate,
+    };
+    console.log('Goal Created:', goalData);
   };
 
   return (
