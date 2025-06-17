@@ -8,7 +8,7 @@ export interface Goal {
   target: number;
 }
 
-export const goals: Goal[] = [
+export const dummyGoals: Goal[] = [
   { id: '1', name: 'Emergency Fund', current: 250, target: 1000 },
   { id: '2', name: 'Vacation Trip', current: 600, target: 2500 },
   { id: '3', name: 'New Phone', current: 400, target: 800 },
