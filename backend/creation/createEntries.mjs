@@ -77,8 +77,8 @@ async function createGoal(user_id, name, category_name, time_frame_name, target_
 
 
 async function main() {
-  await createBudget(5, 'Groceries', 'food', 'weekly', 50);
-  await createGoal(5, 'BBL', 'Transportation', 'monthly', 1000, '2025-06-16', '2025-10-16');
+  await createBudget(6, 'breakfast', 'Food', 'monthly', 5);
+  await createGoal(6, 'Vaginoplasty', 'Transportation', 'weekly', 1000, '2025-06-26', '2025-11-16');
   await pool.end();
 }
 
