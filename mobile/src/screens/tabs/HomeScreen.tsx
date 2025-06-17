@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, Text, ScrollView, TouchableOpacity, Image, Modal, TextInput } from 'react-native';
 import { Swipeable } from 'react-native-gesture-handler';
 import { Ionicons } from '@expo/vector-icons';
-import { goals as initialGoals, Goal } from '../../data/goals';
+import { dummyGoals as initialGoals, Goal } from '../../data/goals';
+import { fetchGoals, createGoal as apiCreateGoal, updateGoal as apiUpdateGoal, deleteGoal as apiDeleteGoal } from '../../api/goals';
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { CompositeNavigationProp } from '@react-navigation/native';
@@ -31,6 +32,7 @@ type HomeScreenProps = CompositeNavigationProp<
 
 // Main HomeScreen component
 const HomeScreen = ({ navigation }: { navigation: HomeScreenProps }) => {
+  const USER_ID = '1';
   const [goalList, setGoalList] = useState<Goal[]>(initialGoals);
   const [selectedGoal, setSelectedGoal] = useState<Goal | null>(null);
   const [tempName, setTempName] = useState('');
@@ -43,6 +45,12 @@ const HomeScreen = ({ navigation }: { navigation: HomeScreenProps }) => {
   const [newCurrent, setNewCurrent] = useState('0');
   const [newTarget, setNewTarget] = useState('');
 
+  useEffect(() => {
+    fetchGoals(USER_ID)
+      .then(setGoalList)
+      .catch((e) => console.log('fetch goals error', e));
+  }, []);
+
   const openModal = (goal: Goal) => {
     setSelectedGoal(goal);
     setTempName(goal.name);
@@ -50,41 +58,48 @@ const HomeScreen = ({ navigation }: { navigation: HomeScreenProps }) => {
     setTempTarget(goal.target.toString());
   };
 
-  const saveGoal = () => {
+  const saveGoal = async () => {
     if (!selectedGoal) return;
-    setGoalList(prev =>
-      prev.map(g =>
-        g.id === selectedGoal.id
-          ? {
-              ...g,
-              name: tempName,
-              current: parseFloat(tempCurrent) || 0,
-              target: parseFloat(tempTarget) || 0,
-            }
-          : g
-      )
-    );
+    try {
+      const updated = await apiUpdateGoal(selectedGoal.id, {
+        name: tempName,
+        current: parseFloat(tempCurrent) || 0,
+        target: parseFloat(tempTarget) || 0,
+      });
+      setGoalList((prev) =>
+        prev.map((g) => (g.id === selectedGoal.id ? updated : g))
+      );
+    } catch (e) {
+      console.log('update goal error', e);
+    }
     setSelectedGoal(null);
   };
 
-  const addGoal = () => {
-    setGoalList(prev => [
-      ...prev,
-      {
-        id: Date.now().toString(),
-        name: newName || `Goal ${prev.length + 1}`,
+  const addGoal = async () => {
+    try {
+      const created = await apiCreateGoal({
+        user_id: USER_ID,
+        name: newName || `Goal ${goalList.length + 1}`,
         current: parseFloat(newCurrent) || 0,
         target: parseFloat(newTarget) || 0,
-      },
-    ]);
+      });
+      setGoalList((prev) => [...prev, created]);
+    } catch (e) {
+      console.log('create goal error', e);
+    }
     setAddModalVisible(false);
     setNewName('');
     setNewCurrent('0');
     setNewTarget('');
   };
 
-  const deleteGoal = (id: string) => {
-    setGoalList(prev => prev.filter(g => g.id !== id));
+  const deleteGoal = async (id: string) => {
+    try {
+      await apiDeleteGoal(id);
+      setGoalList((prev) => prev.filter((g) => g.id !== id));
+    } catch (e) {
+      console.log('delete goal error', e);
+    }
   };
 
   return (

@@ -8,6 +8,7 @@ import {
 } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
+import { createGoal } from '../../api/goals';
 
 export const GoalScreen = () => {
   const [goalName, setGoalName] = useState('');
@@ -22,16 +23,19 @@ export const GoalScreen = () => {
   const [showCategoryPicker, setShowCategoryPicker] = useState(false);
   const [showRecurrencyPicker, setShowRecurrencyPicker] = useState(false);
 
-  const handleCreateGoal = () => {
-    const goalData = {
-      goalName,
-      amount,
-      category,
-      recurrency,
-      startDate,
-      endDate,
-    };
-    console.log('Goal Created:', goalData);
+  const handleCreateGoal = async () => {
+    try {
+      await createGoal({
+        user_id: '1',
+        name: goalName,
+        current: 0,
+        target: parseFloat(amount) || 0,
+      });
+      setGoalName('');
+      setAmount('');
+    } catch (e) {
+      console.log('create goal error', e);
+    }
   };
 
   return (
