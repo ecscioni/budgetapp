@@ -1,5 +1,5 @@
 export interface Goal {
-  id: string;
+  id: number | string;
   /** Name/description of the saving goal */
   name: string;
   /** Current amount saved towards the goal */

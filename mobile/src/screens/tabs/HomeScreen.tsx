@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, Text, ScrollView, TouchableOpacity, Image, Modal, TextInput } from 'react-native';
 import { Swipeable } from 'react-native-gesture-handler';
 import { Ionicons } from '@expo/vector-icons';
 import { goals as initialGoals, Goal } from '../../data/goals';
+
+const API_URL = 'http://localhost:5001';
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { CompositeNavigationProp } from '@react-navigation/native';
@@ -37,6 +39,13 @@ const HomeScreen = ({ navigation }: { navigation: HomeScreenProps }) => {
   const [tempCurrent, setTempCurrent] = useState('');
   const [tempTarget, setTempTarget] = useState('');
 
+  useEffect(() => {
+    fetch(`${API_URL}/api/goals/1`)
+      .then(res => res.json())
+      .then(data => setGoalList(data))
+      .catch(err => console.log('Error fetching goals', err));
+  }, []);
+
   // Modal state for adding new goals
   const [addModalVisible, setAddModalVisible] = useState(false);
   const [newName, setNewName] = useState('');
@@ -52,39 +61,51 @@ const HomeScreen = ({ navigation }: { navigation: HomeScreenProps }) => {
 
   const saveGoal = () => {
     if (!selectedGoal) return;
-    setGoalList(prev =>
-      prev.map(g =>
-        g.id === selectedGoal.id
-          ? {
-              ...g,
-              name: tempName,
-              current: parseFloat(tempCurrent) || 0,
-              target: parseFloat(tempTarget) || 0,
-            }
-          : g
-      )
-    );
-    setSelectedGoal(null);
+    fetch(`${API_URL}/api/goals/${selectedGoal.id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name: tempName,
+        current: parseFloat(tempCurrent) || 0,
+        target: parseFloat(tempTarget) || 0,
+      }),
+    })
+      .then(res => res.json())
+      .then(updated => {
+        setGoalList(prev =>
+          prev.map(g => (g.id === selectedGoal.id ? updated : g))
+        );
+        setSelectedGoal(null);
+      })
+      .catch(err => console.log('Error updating goal', err));
   };
 
   const addGoal = () => {
-    setGoalList(prev => [
-      ...prev,
-      {
-        id: Date.now().toString(),
-        name: newName || `Goal ${prev.length + 1}`,
+    fetch(`${API_URL}/api/goals`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        user_id: '1',
+        name: newName,
         current: parseFloat(newCurrent) || 0,
         target: parseFloat(newTarget) || 0,
-      },
-    ]);
-    setAddModalVisible(false);
-    setNewName('');
-    setNewCurrent('0');
-    setNewTarget('');
+      }),
+    })
+      .then(res => res.json())
+      .then(created => {
+        setGoalList(prev => [...prev, created]);
+        setAddModalVisible(false);
+        setNewName('');
+        setNewCurrent('0');
+        setNewTarget('');
+      })
+      .catch(err => console.log('Error creating goal', err));
   };
 
   const deleteGoal = (id: string) => {
-    setGoalList(prev => prev.filter(g => g.id !== id));
+    fetch(`${API_URL}/api/goals/${id}`, { method: 'DELETE' })
+      .then(() => setGoalList(prev => prev.filter(g => g.id !== id)))
+      .catch(err => console.log('Error deleting goal', err));
   };
 
   return (
