@@ -1,21 +1,4 @@
 import { Goal } from "../data/goals";
-import Constants from "expo-constants";
-
-function resolveBaseUrl() {
-  const envUrl = process.env.EXPO_PUBLIC_API_URL;
-  if (envUrl) return envUrl;
-
-  // Attempt to infer local LAN address from Expo config
-  const host =
-    Constants.expoConfig?.hostUri?.split(":" )[0] ||
-    Constants.manifest?.debuggerHost?.split(":" )[0];
-
-  if (host) return `http://${host}:5001`;
-
-  return "http://localhost:5001";
-}
-
-const BASE_URL = resolveBaseUrl();
 
 export async function fetchGoals(userId: string): Promise<Goal[]> {
   const res = await fetch(`${BASE_URL}/api/goals/${userId}`);
