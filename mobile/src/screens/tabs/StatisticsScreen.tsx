@@ -82,7 +82,7 @@ export default function StatisticsScreen({ navigation }: any) {
       >
         <SummaryCard transactions={transactions} style={styles.slimSummaryCard} />
 
-        {/* Gráfico e navegação (estrutura básica restaurada) */}
+        {/* Chart and navigation (basic structure restored) */}
         <View style={[styles.chartContainer, { width: categories.length * 85 }]}>
           <BarChart
             data={chartData}

@@ -1,7 +1,8 @@
 import React, { useState, useRef } from 'react';
-import { StyleSheet, View, Text, FlatList, Dimensions, TextInput, TouchableOpacity, Alert, TouchableWithoutFeedback, Keyboard } from 'react-native';
+import { StyleSheet, View, Text, FlatList, Dimensions, TextInput, TouchableOpacity, Alert, TouchableWithoutFeedback, Keyboard, Modal } from 'react-native';
 import CardItem from './CardItem';
 import { Ionicons } from '@expo/vector-icons';
+import { useCards } from '../../contexts/CardsContext';
 
 interface Card {
   id: string;
@@ -16,34 +17,16 @@ interface Card {
   isAddCard?: boolean;
 }
 
-const initialCards: Card[] = [
-  {
-    id: '1',
-    cardNumber: '1234 1234 1234 1234',
-    holderName: 'Jonh Doe',
-    balance: '●●●●●●●●',
-    currency: 'AMD',
-    last4: '3567',
-    expiry: '02/25',
-    cvc: '123',
-    imageUrl: 'https://imgur.com/3u4JHkm.png',
-  },
-  // Add more cards if we want
-  {
-    id: 'add',
-    imageUrl: 'https://imgur.com/g68oGmZ.png',
-    isAddCard: true,
-  },
-];
-
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const CARD_WIDTH = SCREEN_WIDTH - 30;
 const SNAP_INTERVAL = SCREEN_WIDTH;
 
 export const CardsScreen = () => {
-  const [cards, setCards] = useState(initialCards);
+  const { cards, addCard, removeCard, updateCard } = useCards();
   const [selectedIndex, setSelectedIndex] = useState(0);
   const flatListRef = useRef<FlatList<Card>>(null);
+  const [showManageModal, setShowManageModal] = useState(false);
+  const [selectedCardForManagement, setSelectedCardForManagement] = useState<Card | null>(null);
 
   const [newCardNumber, setNewCardNumber] = useState('');
   const [newHolderName, setNewHolderName] = useState('');
@@ -57,32 +40,30 @@ export const CardsScreen = () => {
   };
 
   const handleAddCard = () => {
-    const cleanedCardNumber = newCardNumber.replace(/\s/g, ''); // Remove todos os espaços
+    const cleanedCardNumber = newCardNumber.replace(/\s/g, ''); // Remove all spaces
 
     if (!cleanedCardNumber || cleanedCardNumber.length !== 16 || !newHolderName || !newExpiry || !newCvc) {
-      Alert.alert('Erro', 'Por favor, preencha todos os campos do cartão. O número do cartão deve ter 16 dígitos.');
+      Alert.alert('Error', 'Please fill in all card fields. The card number must have 16 digits.');
       return;
     }
 
-    const newId = (cards.length + 1).toString(); // Simple ID generation
-    const newCard = {
-      id: newId,
-      cardNumber: newCardNumber, // Manter o número formatado para exibição
+    const newCardData = {
+      cardNumber: newCardNumber, // Keep formatted number for display
       holderName: newHolderName,
       balance: '●●●●●●●●', // Default value
       currency: 'EUR', // Default value
-      last4: cleanedCardNumber.slice(-4), // Usar o número limpo para os últimos 4 dígitos
+      last4: cleanedCardNumber.slice(-4), // Use clean number for last 4 digits
       expiry: newExpiry,
       cvc: newCvc,
-      isAddCard: false, // Alterado para false
+      isAddCard: false,
     };
 
-    setCards(prevCards => [...prevCards.slice(0, -1), newCard, prevCards[prevCards.length - 1]]);
+    addCard(newCardData);
     setNewCardNumber('');
     setNewHolderName('');
     setNewExpiry('');
     setNewCvc('');
-    Alert.alert('Sucesso', 'NEW Card added!');
+    Alert.alert('Success', 'NEW Card added!');
     // Optionally scroll to the new card
     if (flatListRef.current) {
       const listRef = flatListRef.current;
@@ -93,11 +74,11 @@ export const CardsScreen = () => {
   };
 
   const handleCardNumberChange = (text: string) => {
-    // Remove todos os caracteres não numéricos
+    // Remove all non-numeric characters
     let cleanedText = text.replace(/\D/g, '');
-    // Limita a 16 dígitos
+    // Limit to 16 digits
     cleanedText = cleanedText.substring(0, 16);
-    // Adiciona espaços a cada 4 dígitos
+    // Add spaces every 4 digits
     let formattedText = '';
     for (let i = 0; i < cleanedText.length; i++) {
       if (i > 0 && i % 4 === 0) {
@@ -109,15 +90,45 @@ export const CardsScreen = () => {
   };
 
   const handleExpiryChange = (text: string) => {
-    // Remove todos os caracteres não numéricos
+    // Remove all non-numeric characters
     let cleanedText = text.replace(/\D/g, '');
-    // Limita a 4 dígitos para MMYY
+    // Limit to 4 digits for MMYY
     cleanedText = cleanedText.substring(0, 4);
 
     if (cleanedText.length > 2) {
       cleanedText = `${cleanedText.substring(0, 2)}/${cleanedText.substring(2, 4)}`;
     }
     setNewExpiry(cleanedText);
+  };
+
+  const openManageModal = () => {
+    const currentCard = cards[selectedIndex];
+    if (!currentCard.isAddCard) {
+      setSelectedCardForManagement(currentCard);
+      setShowManageModal(true);
+    }
+  };
+
+  const handleDeleteCard = () => {
+    if (selectedCardForManagement) {
+      Alert.alert(
+        'Confirm deletion',
+        'Are you sure you want to delete this card?',
+        [
+          { text: 'Cancel', style: 'cancel' },
+          { 
+            text: 'Delete', 
+            style: 'destructive',
+            onPress: () => {
+              removeCard(selectedCardForManagement.id);
+              setShowManageModal(false);
+              setSelectedCardForManagement(null);
+              Alert.alert('Success', 'Card deleted successfully!');
+            }
+          }
+        ]
+      );
+    }
   };
 
   const card = cards[selectedIndex];
@@ -129,7 +140,11 @@ export const CardsScreen = () => {
           <Ionicons name="person-outline" size={24} color="#FFFFFF" style={{ marginLeft: -5 }} />
           <Text style={styles.headerTitle}>MY CARDS</Text>
           <View style={styles.headerIcons}>
-            <Ionicons name="notifications-outline" size={24} color="#FFFFFF" style={{ marginRight: -5 }} />
+            {!card.isAddCard && (
+              <TouchableOpacity onPress={openManageModal} style={styles.manageButton}>
+                <Ionicons name="settings-outline" size={24} color="#FFFFFF" style={{ marginRight: -5 }} />
+              </TouchableOpacity>
+            )}
           </View>
         </View>
         <View style={styles.cardCarouselContainer}>
@@ -172,7 +187,7 @@ export const CardsScreen = () => {
                   keyboardType="numeric"
                   value={newCardNumber}
                   onChangeText={handleCardNumberChange}
-                  maxLength={19} // 16 dígitos + 3 espaços
+                  maxLength={19} // 16 digits + 3 spaces
                 />
               </View>
               <View style={styles.infoField}>
@@ -195,7 +210,7 @@ export const CardsScreen = () => {
                     keyboardType="numeric"
                     value={newExpiry}
                     onChangeText={handleExpiryChange}
-                    maxLength={5} // MM/AA
+                    maxLength={5} // MM/YY
                   />
                 </View>
                 <View style={{ flex: 1 }}>
@@ -242,6 +257,35 @@ export const CardsScreen = () => {
             </View>
           </View>
         )}
+
+        {/* Card Management Modal */}
+        <Modal visible={showManageModal} transparent animationType="fade">
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContent}>
+              <Text style={styles.modalTitle}>Manage Card</Text>
+              
+              {selectedCardForManagement && (
+                <View style={styles.cardInfoContainer}>
+                  <Text style={styles.cardInfoText}>
+                    {selectedCardForManagement.holderName || 'Card'} •••• {selectedCardForManagement.last4 || '****'}
+                  </Text>
+                  <Text style={styles.cardInfoSubtext}>
+                    Valid until: {selectedCardForManagement.expiry || '--/--'}
+                  </Text>
+                </View>
+              )}
+
+              <View style={styles.modalActions}>
+                <TouchableOpacity style={styles.modalActionButton} onPress={() => setShowManageModal(false)}>
+                  <Text style={styles.modalActionText}>Close</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={[styles.modalActionButton, styles.deleteButton]} onPress={handleDeleteCard}>
+                  <Text style={[styles.modalActionText, styles.deleteButtonText]}>Delete</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </Modal>
       </View>
     </TouchableWithoutFeedback>
   );
@@ -271,6 +315,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
+  manageButton: {
+    padding: 5,
+  },
   cardCarouselContainer: {
     height: 200,
     width: '100%',
@@ -281,17 +328,6 @@ const styles = StyleSheet.create({
   infoSection: {
     marginHorizontal: 10,
     marginTop: 15,
-  },
-  infoTitle: {
-    color: '#48BF73',
-    fontSize: 22,
-    fontWeight: 'bold',
-    marginBottom: 18,
-    letterSpacing: 1.2,
-    textAlign: 'center',
-    textShadowColor: '#222',
-    textShadowOffset: { width: 0, height: 2 },
-    textShadowRadius: 8,
   },
   infoCardElegant: {
     backgroundColor: '#2a2a2a',
@@ -366,5 +402,64 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     letterSpacing: 1,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContent: {
+    backgroundColor: '#fff',
+    padding: 20,
+    borderRadius: 20,
+    width: '80%',
+    alignItems: 'center',
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 20,
+    color: '#333',
+  },
+  cardInfoContainer: {
+    marginBottom: 20,
+    alignItems: 'center',
+  },
+  cardInfoText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 5,
+    color: '#333',
+  },
+  cardInfoSubtext: {
+    fontSize: 16,
+    color: '#888',
+  },
+  modalActions: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+  },
+  modalActionButton: {
+    flex: 1,
+    padding: 10,
+    borderWidth: 1,
+    borderColor: '#48BF73',
+    borderRadius: 5,
+    alignItems: 'center',
+    marginHorizontal: 5,
+  },
+  modalActionText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#48BF73',
+  },
+  deleteButton: {
+    backgroundColor: '#ff3b30',
+    borderColor: '#ff3b30',
+  },
+  deleteButtonText: {
+    color: '#fff',
   },
 }); 

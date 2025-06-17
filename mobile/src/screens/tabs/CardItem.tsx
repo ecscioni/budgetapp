@@ -110,7 +110,7 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
     borderRadius: 15,
-    backgroundColor: 'red', // Temporário para depuração
+    backgroundColor: 'red', // Temporary for debugging
   },
 });
 
