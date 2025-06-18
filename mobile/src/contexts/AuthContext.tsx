@@ -66,9 +66,15 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, email, password, confirmPassword }),
       });
+
       if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.message || 'Registration failed');
+        const contentType = res.headers.get('content-type');
+        let message = 'Registration failed';
+        if (contentType && contentType.includes('application/json')) {
+          const data = await res.json();
+          message = data.message || message;
+        }
+        throw new Error(message);
       }
       return true;
     } catch (err) {
