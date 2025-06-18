@@ -3,9 +3,12 @@ import bcrypt from "bcrypt";
 
 export async function registerUser(req, res) {
     try {
-        const { username, email, password } = req.body;
-        if (!username || !email || !password) {
+        const { username, email, password, confirmPassword } = req.body;
+        if (!username || !email || !password || !confirmPassword) {
             return res.status(400).json({ message: "All fields are required" });
+        }
+        if (password !== confirmPassword) {
+            return res.status(400).json({ message: "Passwords do not match" });
         }
         const hashed = await bcrypt.hash(password, 10);
         await sql`
@@ -15,7 +18,7 @@ export async function registerUser(req, res) {
         res.status(201).json({ message: "Registration successful" });
     } catch (err) {
         if (err.code === '23505') {
-            res.status(400).json({ message: "Username or email already exists" });
+            res.status(409).json({ message: "Username or email already exists" });
         } else {
             console.error("Registration error", err);
             res.status(500).json({ message: "Internal server error" });

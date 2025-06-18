@@ -24,12 +24,14 @@ export const RegisterScreen = () => {
       Alert.alert('Error', 'Passwords do not match');
       return;
     }
-    const success = await register(username, email, password);
-    if (success) {
-      Alert.alert('Success', 'Account created');
-      navigation.navigate('Login');
-    } else {
-      Alert.alert('Error', 'Registration failed');
+    try {
+      const success = await register(username, email, password, confirm);
+      if (success) {
+        Alert.alert('Success', 'Account created');
+        navigation.navigate('Login');
+      }
+    } catch (err: any) {
+      Alert.alert('Error', err.message || 'Registration failed');
     }
   };
 
