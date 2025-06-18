@@ -23,7 +23,7 @@ function getApiUrl() {
   }
   const host =
     Constants.manifest?.debuggerHost?.split(':').shift() || 'localhost';
-  return `http://${host}:5001`;
+  return `http://${host}:8080`;
 }
 
 const API_URL = getApiUrl();
