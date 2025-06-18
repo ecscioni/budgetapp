@@ -3,7 +3,12 @@ import { fetchWithProxy } from "./fetchWithProxy.js";
 
 neonConfig.fetchFunction = fetchWithProxy;
 
-import"dotenv/config";
+import dotenv from "dotenv";
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+dotenv.config({ path: path.join(__dirname, "../.env") });
 
 // Creates a SQL connection using our DB URL
 export const sql = neon(process.env.DATABASE_URL)
@@ -17,6 +22,16 @@ export async function initDB() {
             email VARCHAR(255) UNIQUE NOT NULL,
             password VARCHAR(255) NOT NULL
         )`;
+        // Remove duplicate usernames/emails to guarantee indexes can be created
+        await sql`
+            DELETE FROM users a USING users b
+            WHERE a.id < b.id AND a.username = b.username
+        `;
+        await sql`
+            DELETE FROM users a USING users b
+            WHERE a.id < b.id AND a.email = b.email
+        `;
+
         // Ensure unique constraints exist even if table already existed
         await sql`CREATE UNIQUE INDEX IF NOT EXISTS unique_username_idx ON users (username)`;
         await sql`CREATE UNIQUE INDEX IF NOT EXISTS unique_email_idx ON users (email)`;
