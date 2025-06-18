@@ -1,6 +1,7 @@
-import React from 'react';
-import { StyleSheet, View, Text, ScrollView, TouchableOpacity, TextInput } from 'react-native';
+import React, { useState } from 'react';
+import { StyleSheet, View, Text, ScrollView, TouchableOpacity, TextInput, Alert } from 'react-native';
 import { useNavigation, NavigationProp } from '@react-navigation/native';
+import { useAuth } from '../../contexts/AuthContext';
 
 // Define your RootStackParamList type based on your navigator setup
 type RootStackParamList = {
@@ -12,6 +13,19 @@ type RootStackParamList = {
 
 export const LoginScreen = () => {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+  const { login } = useAuth();
+
+  const [usernameOrEmail, setUsernameOrEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const handleLogin = async () => {
+    const success = await login(usernameOrEmail, password);
+    if (success) {
+      navigation.navigate('MainApp');
+    } else {
+      Alert.alert('Login failed', 'Invalid credentials');
+    }
+  };
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -21,6 +35,8 @@ export const LoginScreen = () => {
         style={styles.input}
         placeholder="Email or Username"
         placeholderTextColor="#aaaaaa"
+        value={usernameOrEmail}
+        onChangeText={setUsernameOrEmail}
       />
 
       <TextInput
@@ -28,9 +44,11 @@ export const LoginScreen = () => {
         placeholder="Password"
         placeholderTextColor="#aaaaaa"
         secureTextEntry
+        value={password}
+        onChangeText={setPassword}
       />
 
-      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('MainApp')}>
+      <TouchableOpacity style={styles.button} onPress={handleLogin}>
         <Text style={styles.buttonText}>Log In</Text>
       </TouchableOpacity>
 
