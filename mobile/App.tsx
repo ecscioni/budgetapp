@@ -18,6 +18,7 @@ import { GoalScreen } from './src/screens/tabs/GoalScreen';
 import { MoreScreen } from './src/screens/tabs/MoreScreen';
 import { CategoryTransactionsScreen } from './src/screens/tabs/CategoryTransactionsScreen';
 import { CardsProvider } from './src/contexts/CardsContext';
+import { AuthProvider } from './src/contexts/AuthContext';
 import * as SplashScreen from 'expo-splash-screen';
 import { useFonts } from 'expo-font';
 
@@ -103,9 +104,10 @@ export default function App() {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <CardsProvider>
-        <View style={styles.container} onLayout={onLayoutRootView}>
-          <NavigationContainer>
+      <AuthProvider>
+        <CardsProvider>
+          <View style={styles.container} onLayout={onLayoutRootView}>
+            <NavigationContainer>
             <Stack.Navigator screenOptions={{ 
               headerShown: false,
               gestureEnabled: false,
@@ -127,6 +129,7 @@ export default function App() {
           </NavigationContainer>
         </View>
       </CardsProvider>
+      </AuthProvider>
     </GestureHandlerRootView>
   );
 }
