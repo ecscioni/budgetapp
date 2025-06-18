@@ -18,8 +18,8 @@ export async function initDB() {
             password VARCHAR(255) NOT NULL
         )`;
         // Ensure unique constraints exist even if table already existed
-        await sql`ALTER TABLE users ADD CONSTRAINT IF NOT EXISTS unique_username UNIQUE (username)`;
-        await sql`ALTER TABLE users ADD CONSTRAINT IF NOT EXISTS unique_email UNIQUE (email)`;
+        await sql`CREATE UNIQUE INDEX IF NOT EXISTS unique_username_idx ON users (username)`;
+        await sql`CREATE UNIQUE INDEX IF NOT EXISTS unique_email_idx ON users (email)`;
         await sql`CREATE TABLE IF NOT EXISTS transactions(
         id SERIAL PRIMARY KEY,
         user_id VARCHAR(255) NOT NULL,
