@@ -10,6 +10,14 @@ export async function registerUser(req, res) {
         if (password !== confirmPassword) {
             return res.status(400).json({ message: "Passwords do not match" });
         }
+        // ensure username and email are unique even if the table was created
+        // without constraints
+        const existing = await sql`
+            SELECT 1 FROM users WHERE username = ${username} OR email = ${email}
+            LIMIT 1`;
+        if (existing.length > 0) {
+            return res.status(409).json({ message: "Username or email already exists" });
+        }
         const hashed = await bcrypt.hash(password, 10);
         await sql`
             INSERT INTO users (username, email, password)
@@ -33,7 +41,9 @@ export async function loginUser(req, res) {
             return res.status(400).json({ message: "All fields are required" });
         }
         const users = await sql`
-            SELECT * FROM users WHERE username = ${usernameOrEmail} OR email = ${usernameOrEmail}
+            SELECT * FROM users
+            WHERE username = ${usernameOrEmail} OR email = ${usernameOrEmail}
+            ORDER BY id DESC LIMIT 1
         `;
         if (users.length === 0) {
             return res.status(401).json({ message: "Invalid credentials" });
