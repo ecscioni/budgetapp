@@ -19,11 +19,11 @@ export const LoginScreen = () => {
   const [password, setPassword] = useState('');
 
   const handleLogin = async () => {
-    const success = await login(usernameOrEmail, password);
-    if (success) {
+    try {
+      await login(usernameOrEmail, password);
       navigation.navigate('MainApp');
-    } else {
-      Alert.alert('Login failed', 'Invalid credentials');
+    } catch (err: any) {
+      Alert.alert('Login failed', err.message || 'Invalid credentials');
     }
   };
 
