@@ -37,7 +37,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       await AsyncStorage.setItem('@theme', type);
       setThemeType(type);
     } catch (error) {
-      console.error('Erro ao salvar preferência de tema:', error);
+      console.error('Error saving theme preference:', error);
     }
   };
 
