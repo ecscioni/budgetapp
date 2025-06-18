@@ -3,7 +3,13 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-nati
 import { Ionicons } from '@expo/vector-icons';
 import { transactions } from '../../data/transactions';
 
-export const CategoryTransactionsScreen = ({ route, navigation }) => {
+export const CategoryTransactionsScreen = ({
+  route,
+  navigation,
+}: {
+  route: any;
+  navigation: any;
+}) => {
   const { category } = route.params;
   const items = transactions.filter(t => t.category === category);
 
