@@ -10,13 +10,16 @@ interface User {
 
 interface AuthContextType {
   user: User | null;
-  login: (usernameOrEmail: string, password: string) => Promise<boolean>;
+  login: (
+    usernameOrEmail: string,
+    password: string
+  ) => Promise<void>;
   register: (
     username: string,
     email: string,
     password: string,
     confirmPassword: string
-  ) => Promise<boolean>;
+  ) => Promise<void>;
   logout: () => Promise<void>;
 }
 
@@ -37,21 +40,25 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [user, setUser] = useState<User | null>(null);
 
   const login = async (usernameOrEmail: string, password: string) => {
-    try {
-      const res = await fetch(`${API_URL}/api/auth/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ usernameOrEmail, password }),
-      });
-      if (!res.ok) return false;
-      const data = await res.json();
-      setUser(data.user);
-      await AsyncStorage.setItem('user', JSON.stringify(data.user));
-      return true;
-    } catch (err) {
-      console.error('Login error', err);
-      return false;
+    const res = await fetch(`${API_URL}/api/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ usernameOrEmail, password }),
+    });
+
+    if (!res.ok) {
+      const contentType = res.headers.get('content-type');
+      let message = 'Login failed';
+      if (contentType && contentType.includes('application/json')) {
+        const data = await res.json();
+        message = data.message || message;
+      }
+      throw new Error(message);
     }
+
+    const data = await res.json();
+    setUser(data.user);
+    await AsyncStorage.setItem('user', JSON.stringify(data.user));
   };
 
   const register = async (
@@ -60,26 +67,20 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     password: string,
     confirmPassword: string
   ) => {
-    try {
-      const res = await fetch(`${API_URL}/api/auth/register`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, email, password, confirmPassword }),
-      });
+    const res = await fetch(`${API_URL}/api/auth/register`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, email, password, confirmPassword }),
+    });
 
-      if (!res.ok) {
-        const contentType = res.headers.get('content-type');
-        let message = 'Registration failed';
-        if (contentType && contentType.includes('application/json')) {
-          const data = await res.json();
-          message = data.message || message;
-        }
-        throw new Error(message);
+    if (!res.ok) {
+      const contentType = res.headers.get('content-type');
+      let message = 'Registration failed';
+      if (contentType && contentType.includes('application/json')) {
+        const data = await res.json();
+        message = data.message || message;
       }
-      return true;
-    } catch (err) {
-      console.error('Register error', err);
-      return false;
+      throw new Error(message);
     }
   };
 
