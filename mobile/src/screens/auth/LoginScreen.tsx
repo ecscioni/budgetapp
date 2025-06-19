@@ -19,6 +19,10 @@ export const LoginScreen = () => {
   const [password, setPassword] = useState('');
 
   const handleLogin = async () => {
+    if (!usernameOrEmail || !password) {
+      Alert.alert('Error', 'Please enter your username/email and password');
+      return;
+    }
     try {
       await login(usernameOrEmail, password);
       navigation.navigate('MainApp');
