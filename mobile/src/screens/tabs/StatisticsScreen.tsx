@@ -12,9 +12,24 @@ import { BarChart } from 'react-native-chart-kit';
 import { Ionicons } from '@expo/vector-icons';
 import { transactions } from '@/data/transactions';
 import SummaryCard from '@/components/SummaryCard';
+import { useCards } from '../../contexts/CardsContext';
 
 export default function StatisticsScreen({ navigation }: any) {
+  const { cards } = useCards();
+  const realCards = cards.filter(card => !card.isAddCard);
+  const showZero = realCards.length === 0;
+
   const categories = useMemo(() => {
+    if (showZero) {
+      // Mostra as categorias mas tudo a 0
+      const baseColors = ['#10B981', '#60A5FA', '#F59E0B', '#EF4444'];
+      return [
+        { label: 'Groceries', value: 0, color: baseColors[0] },
+        { label: 'Bills', value: 0, color: baseColors[1] },
+        { label: 'Investments', value: 0, color: baseColors[2] },
+        { label: 'Savings', value: 0, color: baseColors[3] },
+      ];
+    }
     const baseColors = ['#10B981', '#60A5FA', '#F59E0B', '#EF4444'];
     const totals: Record<string, number> = {};
     transactions.forEach(t => {
@@ -27,7 +42,7 @@ export default function StatisticsScreen({ navigation }: any) {
       value: grand ? Math.round((val / grand) * 100) : 0,
       color: baseColors[idx % baseColors.length],
     }));
-  }, []);
+  }, [showZero]);
 
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [modalVisible, setModalVisible] = useState(false);
@@ -61,7 +76,7 @@ export default function StatisticsScreen({ navigation }: any) {
       {/* Header */}
       <View style={styles.header}>
         <Ionicons name="person-outline" size={24} color="#FFFFFF" style={{ marginLeft: -5 }} />
-        <Text style={styles.headerTitle}>STATISTIC</Text>
+        <Text style={styles.headerTitle}>STATISTICS</Text>
         <View style={styles.headerIcons}>
           <Ionicons name="notifications-outline" size={24} color="#FFFFFF" style={{ marginRight: -5 }} />
         </View>
@@ -80,7 +95,7 @@ export default function StatisticsScreen({ navigation }: any) {
           ],
         }}
       >
-        <SummaryCard transactions={transactions} style={styles.slimSummaryCard} />
+        <SummaryCard transactions={transactions} style={styles.slimSummaryCard} forceZero={showZero} />
 
         {/* Chart and navigation (basic structure restored) */}
         <View style={[styles.chartContainer, { width: categories.length * 85 }]}>

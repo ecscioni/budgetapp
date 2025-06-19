@@ -55,6 +55,12 @@ const HomeScreen = ({ navigation }: { navigation: HomeScreenProps }) => {
   // Filter only real cards (exclude the "add" card)
   const realCards = cards.filter(card => !card.isAddCard);
 
+  // Se não houver cartões, mostrar objetivos a zero
+  const showZero = realCards.length === 0;
+  const displayedGoals = showZero
+    ? goalList.map(goal => ({ ...goal, current: 0, target: 0 }))
+    : goalList;
+
   const handleMomentumScrollEnd = (event: any) => {
     const offsetX = event.nativeEvent.contentOffset.x;
     const newIndex = Math.round(offsetX / SNAP_INTERVAL);
@@ -194,9 +200,9 @@ const HomeScreen = ({ navigation }: { navigation: HomeScreenProps }) => {
           <Text style={styles.transactionsTitle}>Goals Progress</Text>
         </View>
 
-        {goalList.map(goal => {
-          const progress = Math.min(goal.current / goal.target, 1);
-          const completed = progress >= 1;
+        {displayedGoals.map(goal => {
+          const progress = Math.min(goal.target === 0 ? 0 : goal.current / goal.target, 1);
+          const completed = !showZero && progress >= 1;
           return (
             <Swipeable
               key={goal.id}
@@ -204,6 +210,7 @@ const HomeScreen = ({ navigation }: { navigation: HomeScreenProps }) => {
                 <TouchableOpacity
                   style={[styles.swipeAction, styles.deleteSwipeAction]}
                   onPress={() => deleteGoal(goal.id)}
+                  disabled={showZero}
                 >
                   <Ionicons name="trash-outline" size={24} color="#fff" />
                 </TouchableOpacity>
@@ -211,7 +218,8 @@ const HomeScreen = ({ navigation }: { navigation: HomeScreenProps }) => {
             >
               <TouchableOpacity
                 style={[styles.goalItem, completed && styles.goalCompleted]}
-                onPress={() => openModal(goal)}
+                onPress={() => !showZero && openModal(goal)}
+                disabled={showZero}
               >
                 <View style={styles.goalHeader}>
                   <Text style={styles.goalName}>{goal.name}</Text>
@@ -436,7 +444,6 @@ const styles = StyleSheet.create({
     borderRadius: 4,
   },
   cardSection: {
-    marginBottom: 10,
   },
   sectionTitle: {
     color: '#FFFFFF',
@@ -472,7 +479,8 @@ const styles = StyleSheet.create({
     borderColor: '#444',
     alignItems: 'center',
     justifyContent: 'center',
-    minHeight: 120,
+    minHeight: 200,
+    marginBottom: 13,
   },
   noCardsText: {
     color: '#FFFFFF',
