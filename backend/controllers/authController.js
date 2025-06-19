@@ -7,8 +7,19 @@ export async function registerUser(req, res) {
         if (!username || !email || !password || !confirmPassword) {
             return res.status(400).json({ message: "All fields are required" });
         }
+
+        const emailRegex = /^[^@\s]+@[^@\s]+\.com$/i;
+        if (!emailRegex.test(email)) {
+            return res.status(400).json({ message: "Invalid email format" });
+        }
+
         if (password !== confirmPassword) {
             return res.status(400).json({ message: "Passwords do not match" });
+        }
+
+        const strongPassword = /^(?=.*\d).{6,}$/;
+        if (!strongPassword.test(password)) {
+            return res.status(400).json({ message: "Password must be at least 6 characters and contain a number" });
         }
         // ensure username and email are unique even if the table was created
         // without constraints
@@ -36,13 +47,17 @@ export async function registerUser(req, res) {
 
 export async function loginUser(req, res) {
     try {
-        const { usernameOrEmail, password } = req.body;
+        let { usernameOrEmail, password } = req.body;
         if (!usernameOrEmail || !password) {
             return res.status(400).json({ message: "All fields are required" });
         }
+
+        usernameOrEmail = usernameOrEmail.trim();
+
         const users = await sql`
             SELECT * FROM users
-            WHERE username = ${usernameOrEmail} OR email = ${usernameOrEmail}
+            WHERE LOWER(username) = LOWER(${usernameOrEmail})
+               OR LOWER(email) = LOWER(${usernameOrEmail})
             ORDER BY id DESC LIMIT 1
         `;
         if (users.length === 0) {

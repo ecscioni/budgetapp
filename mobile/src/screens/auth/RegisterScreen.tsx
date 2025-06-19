@@ -20,6 +20,20 @@ export const RegisterScreen = () => {
   const [confirm, setConfirm] = useState('');
 
   const handleRegister = async () => {
+    if (!password) {
+      Alert.alert('Error', 'Please enter a password');
+      return;
+    }
+    const strongPassword = /^(?=.*\d).{6,}$/;
+    if (!strongPassword.test(password)) {
+      Alert.alert('Error', 'Password must be at least 6 characters and contain a number');
+      return;
+    }
+    const emailRegex = /^[^@\s]+@[^@\s]+\.com$/i;
+    if (!emailRegex.test(email)) {
+      Alert.alert('Error', 'Please enter a valid email');
+      return;
+    }
     if (password !== confirm) {
       Alert.alert('Error', 'Passwords do not match');
       return;
