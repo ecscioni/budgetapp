@@ -4,6 +4,7 @@ import { Swipeable } from 'react-native-gesture-handler';
 import { Ionicons } from '@expo/vector-icons';
 import { transactions as initialTransactions, Transaction } from '../../data/transactions';
 import SummaryCard from '../../components/SummaryCard';
+import { useCards } from '../../contexts/CardsContext';
 
 const CATEGORIES = [
   { label: 'Groceries', emoji: '🛒' },
@@ -20,6 +21,9 @@ export const TransactionsScreen = () => {
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
   const [tempCategory, setTempCategory] = useState('');
 
+  const { cards } = useCards();
+  const realCards = cards.filter(card => !card.isAddCard);
+  const showZero = realCards.length === 0;
 
   const openModal = (transaction: Transaction) => {
     if (transaction.type === 'received') return; // no modal for incomes
@@ -51,20 +55,24 @@ export const TransactionsScreen = () => {
   return (
     <View style={styles.container}>
       <ScrollView>
-        <SummaryCard transactions={transactionList} />
+        <SummaryCard transactions={transactionList} forceZero={showZero} />
 
         {CATEGORIES.map(({ label }) => {
+          if (showZero) {
+            return (
+              <View key={label} style={{ marginBottom: 20 }}>
+                <Text style={styles.categoryHeader}>{label}</Text>
+              </View>
+            );
+          }
           const items = transactionList.filter(t =>
             label === 'Incomes' ? t.type === 'received' : t.category === label && t.type === 'sent'
           );
           if (items.length === 0) return null;
-
           const summary = getCategoryTotal(items);
-
           return (
             <View key={label} style={{ marginBottom: 20 }}>
               <Text style={styles.categoryHeader}>{label}</Text>
-
               {items.map(transaction => (
                 <Swipeable
                   key={transaction.id}
@@ -116,7 +124,6 @@ export const TransactionsScreen = () => {
                   </TouchableOpacity>
                 </Swipeable>
               ))}
-
               <Text style={[styles.categorySummary, { color: summary.color }]}>
                 {summary.label}
               </Text>

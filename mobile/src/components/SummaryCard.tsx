@@ -8,21 +8,29 @@ type Props = {
   transactions: Transaction[];
   /** Optional style overrides for the card container */
   style?: ViewStyle;
+  forceZero?: boolean;
 };
 
-const SummaryCard: React.FC<Props> = ({ transactions, style }) => {
+const SummaryCard: React.FC<Props> = ({ transactions, style, forceZero }) => {
   const [modalVisible, setModalVisible] = useState(false);
 
-  const income = transactions
+  let income = transactions
     .filter((t: Transaction) => t.type === 'received')
     .reduce((sum, t: Transaction) => sum + parseFloat(t.amount.replace('€', '').replace(',', '.')), 0);
 
-  const spent = transactions
+  let spent = transactions
     .filter((t: Transaction) => t.type === 'sent')
     .reduce((sum, t: Transaction) => sum + Math.abs(parseFloat(t.amount.replace('€', '').replace(',', '.'))), 0);
 
-  const balance = income - spent;
-  const spentPercent = income ? Math.min((spent / income) * 100, 100) : 0;
+  let balance = income - spent;
+  let spentPercent = income ? Math.min((spent / income) * 100, 100) : 0;
+
+  if (forceZero) {
+    income = 0;
+    spent = 0;
+    balance = 0;
+    spentPercent = 0;
+  }
 
   return (
     <>
