@@ -66,6 +66,13 @@ npm install
 npx expo start
 ```
 
+### Configure API URL
+
+Set the environment variable `EXPO_PUBLIC_API_URL` in `mobile/.env` to the URL of
+your running backend (e.g. `http://localhost:8080`). This is required so the
+mobile app can communicate with the Express server and the Neon PostgreSQL
+database.
+
 Backend setup (Express):
 
 ```bash

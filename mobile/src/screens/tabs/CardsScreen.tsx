@@ -33,6 +33,8 @@ export const CardsScreen = () => {
   const [newExpiry, setNewExpiry] = useState('');
   const [newCvc, setNewCvc] = useState('');
 
+  const [showAddCardSheet, setShowAddCardSheet] = useState(false);
+
   const handleMomentumScrollEnd = (event: any) => {
     const offsetX = event.nativeEvent.contentOffset.x;
     const newIndex = Math.round(offsetX / SNAP_INTERVAL);
@@ -154,7 +156,7 @@ export const CardsScreen = () => {
             <Ionicons name="card-outline" size={80} color="#666" />
             <Text style={styles.noCardsTitle}>No Cards Yet</Text>
             <Text style={styles.noCardsSubtitle}>Add your first card to get started</Text>
-            <TouchableOpacity style={styles.addFirstCardButton} onPress={() => setSelectedIndex(cards.length - 1)}>
+            <TouchableOpacity style={styles.addFirstCardButton} onPress={() => setShowAddCardSheet(true)}>
               <Text style={styles.addFirstCardButtonText}>Add Your First Card</Text>
             </TouchableOpacity>
           </View>
@@ -200,7 +202,7 @@ export const CardsScreen = () => {
                       keyboardType="numeric"
                       value={newCardNumber}
                       onChangeText={handleCardNumberChange}
-                      maxLength={19} // 16 digits + 3 spaces
+                      maxLength={19}
                     />
                   </View>
                   <View style={styles.infoField}>
@@ -223,7 +225,7 @@ export const CardsScreen = () => {
                         keyboardType="numeric"
                         value={newExpiry}
                         onChangeText={handleExpiryChange}
-                        maxLength={5} // MM/YY
+                        maxLength={5}
                       />
                     </View>
                     <View style={{ flex: 1 }}>
@@ -300,6 +302,77 @@ export const CardsScreen = () => {
               </View>
             </View>
           </View>
+        </Modal>
+
+        {/* Bottom Sheet para adicionar cartão */}
+        <Modal
+          visible={showAddCardSheet}
+          animationType="slide"
+          transparent
+          onRequestClose={() => setShowAddCardSheet(false)}
+        >
+          <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+            <View style={styles.bottomSheetOverlay}>
+              <View style={styles.bottomSheetContent}>
+                <Text style={styles.infoTitleElegant}>ADICIONAR CARTÃO</Text>
+                <View style={styles.infoField}>
+                  <Text style={styles.infoLabelElegant}>Number</Text>
+                  <TextInput
+                    style={styles.infoValueInput}
+                    placeholder="**** **** **** ****"
+                    placeholderTextColor="#888"
+                    keyboardType="numeric"
+                    value={newCardNumber}
+                    onChangeText={handleCardNumberChange}
+                    maxLength={19}
+                  />
+                </View>
+                <View style={styles.infoField}>
+                  <Text style={styles.infoLabelElegant}>Name</Text>
+                  <TextInput
+                    style={styles.infoValueInput}
+                    placeholder="CARD HOLDERNAME"
+                    placeholderTextColor="#888"
+                    value={newHolderName}
+                    onChangeText={setNewHolderName}
+                  />
+                </View>
+                <View style={[styles.infoField, { flexDirection: 'row', justifyContent: 'space-between', gap: 24 }]}> 
+                  <View style={{ flex: 1 }}>
+                    <Text style={styles.infoLabelElegant}>Validity</Text>
+                    <TextInput
+                      style={styles.infoValueInput}
+                      placeholder="MM/AA"
+                      placeholderTextColor="#888"
+                      keyboardType="numeric"
+                      value={newExpiry}
+                      onChangeText={handleExpiryChange}
+                      maxLength={5}
+                    />
+                  </View>
+                  <View style={{ flex: 1 }}>
+                    <Text style={styles.infoLabelElegant}>CVC</Text>
+                    <TextInput
+                      style={styles.infoValueInput}
+                      placeholder="***"
+                      placeholderTextColor="#888"
+                      keyboardType="numeric"
+                      value={newCvc}
+                      onChangeText={setNewCvc}
+                      maxLength={3}
+                      secureTextEntry
+                    />
+                  </View>
+                </View>
+                <TouchableOpacity style={styles.addButton} onPress={() => { handleAddCard(); setShowAddCardSheet(false); }}>
+                  <Text style={styles.addButtonText}>Adicionar Cartão</Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => setShowAddCardSheet(false)} style={{ marginTop: 10 }}>
+                  <Text style={{ color: '#48BF73', fontWeight: 'bold' }}>Fechar</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </TouchableWithoutFeedback>
         </Modal>
       </View>
     </TouchableWithoutFeedback>
@@ -514,5 +587,25 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     letterSpacing: 1,
+  },
+  bottomSheetOverlay: {
+    flex: 1,
+    justifyContent: 'flex-end',
+    backgroundColor: 'rgba(0,0,0,0.5)',
+  },
+  bottomSheetContent: {
+    backgroundColor: '#2a2a2a',
+    borderTopLeftRadius: 32,
+    borderTopRightRadius: 32,
+    padding: 24,
+    borderWidth: 1.5,
+    borderColor: '#48BF73',
+    shadowColor: '#48BF73',
+    shadowOpacity: 0.25,
+    shadowRadius: 24,
+    elevation: 12,
+    alignItems: 'center',
+    overflow: 'hidden',
+    position: 'relative',
   },
 }); 

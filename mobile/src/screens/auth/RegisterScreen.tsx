@@ -1,6 +1,7 @@
-import React from 'react';
-import { StyleSheet, View, Text, ScrollView, TouchableOpacity, TextInput } from 'react-native';
+import React, { useState } from 'react';
+import { StyleSheet, View, Text, ScrollView, TouchableOpacity, TextInput, Alert } from 'react-native';
 import { useNavigation, NavigationProp } from '@react-navigation/native';
+import { useAuth } from '../../contexts/AuthContext';
 
 // Define your RootStackParamList type based on your navigator setup
 type RootStackParamList = {
@@ -11,6 +12,26 @@ type RootStackParamList = {
 
 export const RegisterScreen = () => {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+  const { register } = useAuth();
+
+  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirm, setConfirm] = useState('');
+
+  const handleRegister = async () => {
+    if (password !== confirm) {
+      Alert.alert('Error', 'Passwords do not match');
+      return;
+    }
+    try {
+      await register(username, email, password, confirm);
+      Alert.alert('Success', 'Account created');
+      navigation.navigate('Login');
+    } catch (err: any) {
+      Alert.alert('Error', err.message || 'Registration failed');
+    }
+  };
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -20,6 +41,8 @@ export const RegisterScreen = () => {
         style={styles.input}
         placeholder="Full Name"
         placeholderTextColor="#aaaaaa"
+        value={username}
+        onChangeText={setUsername}
       />
 
       <TextInput
@@ -27,6 +50,8 @@ export const RegisterScreen = () => {
         placeholder="Email"
         placeholderTextColor="#aaaaaa"
         keyboardType="email-address"
+        value={email}
+        onChangeText={setEmail}
       />
 
       <TextInput
@@ -34,6 +59,8 @@ export const RegisterScreen = () => {
         placeholder="Password"
         placeholderTextColor="#aaaaaa"
         secureTextEntry
+        value={password}
+        onChangeText={setPassword}
       />
 
        <TextInput
@@ -41,9 +68,11 @@ export const RegisterScreen = () => {
         placeholder="Confirm Password"
         placeholderTextColor="#aaaaaa"
         secureTextEntry
+        value={confirm}
+        onChangeText={setConfirm}
       />
 
-      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Login')}>
+      <TouchableOpacity style={styles.button} onPress={handleRegister}>
         <Text style={styles.buttonText}>Sign Up</Text>
       </TouchableOpacity>
 

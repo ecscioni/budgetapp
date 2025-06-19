@@ -1,12 +1,40 @@
-import {neon} from "@neondatabase/serverless"
+import { neon, neonConfig } from "@neondatabase/serverless";
+import { fetchWithProxy } from "./fetchWithProxy.js";
 
-import"dotenv/config";
+neonConfig.fetchFunction = fetchWithProxy;
+
+import dotenv from "dotenv";
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+dotenv.config({ path: path.join(__dirname, "../.env") });
 
 // Creates a SQL connection using our DB URL
 export const sql = neon(process.env.DATABASE_URL)
 
 export async function initDB() {
     try {
+        await sql`
+        CREATE TABLE IF NOT EXISTS users(
+            id SERIAL PRIMARY KEY,
+            username VARCHAR(255) UNIQUE NOT NULL,
+            email VARCHAR(255) UNIQUE NOT NULL,
+            password VARCHAR(255) NOT NULL
+        )`;
+        // Remove duplicate usernames/emails to guarantee indexes can be created
+        await sql`
+            DELETE FROM users a USING users b
+            WHERE a.id < b.id AND a.username = b.username
+        `;
+        await sql`
+            DELETE FROM users a USING users b
+            WHERE a.id < b.id AND a.email = b.email
+        `;
+
+        // Ensure unique constraints exist even if table already existed
+        await sql`CREATE UNIQUE INDEX IF NOT EXISTS unique_username_idx ON users (username)`;
+        await sql`CREATE UNIQUE INDEX IF NOT EXISTS unique_email_idx ON users (email)`;
         await sql`CREATE TABLE IF NOT EXISTS transactions(
         id SERIAL PRIMARY KEY,
         user_id VARCHAR(255) NOT NULL,
