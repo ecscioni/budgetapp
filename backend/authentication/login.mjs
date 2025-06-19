@@ -22,13 +22,13 @@ const ask = (question) =>
       const success = await loginUser(usernameOrEmail, password);
 
       if (success) {
-        console.log('\n Login successful! Welcome back.\n');
+        console.log('\n Welcome back.\n');
       } else {
-        console.log('\n Login failed. Check your credentials.\n');
+        console.log('\n Check your credentials.\n');
       }
     }
   } catch (err) {
-    console.error('\n Error during login:', err);
+    console.error('\n Error during login:\n', err.message);
   } finally {
     rl.close();
   }
