@@ -1,9 +1,13 @@
 import React, { useState, useRef } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, Animated } from 'react-native';
 import { useCards } from '../../contexts/CardsContext';
+import { useAuth } from '../../contexts/AuthContext';
+import { useNavigation } from '@react-navigation/native';
 
 export const ProfileScreen = () => {
   const { cards } = useCards();
+  const { logout } = useAuth();
+  const navigation = useNavigation();
   const [showThemeOptions, setShowThemeOptions] = useState(false);
   const [showSettingsOptions, setShowSettingsOptions] = useState(false);
   const [showNotificationsOptions, setShowNotificationsOptions] = useState(false);
@@ -49,6 +53,18 @@ export const ProfileScreen = () => {
 
   // Filter only real cards (exclude the "add" card)
   const realCards = cards.filter(card => !card.isAddCard);
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'Login' as never }],
+      });
+    } catch (err) {
+      alert('Error logging out. Please try again.');
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -165,7 +181,7 @@ export const ProfileScreen = () => {
         </Animated.View>
       </View>
 
-      <TouchableOpacity style={styles.logOutBox}>
+      <TouchableOpacity style={styles.logOutBox} onPress={handleLogout}>
         <Text style={styles.option}>Logout</Text>
       </TouchableOpacity>
     </View>

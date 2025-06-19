@@ -53,7 +53,11 @@ export const CardsProvider: React.FC<{ children: ReactNode }> = ({ children }) =
   };
 
   const removeCard = (id: string) => {
-    setCards(prevCards => prevCards.filter(card => card.id !== id));
+    setCards(prevCards => {
+      const filtered = prevCards.filter(card => card.id !== id && !card.isAddCard);
+      const addCard = prevCards.find(card => card.isAddCard);
+      return addCard ? [...filtered, addCard] : filtered;
+    });
   };
 
   const updateCard = (id: string, updates: Partial<Card>) => {
