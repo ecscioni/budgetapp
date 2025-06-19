@@ -1,4 +1,4 @@
-import { Pool } from 'pg';
+import { Pool } from 'pg'; 
 import { hash, compare } from 'bcrypt';
 
 const pool = new Pool({
@@ -12,24 +12,51 @@ const pool = new Pool({
   }
 });
 
+function isValidEmail(email) {
+  const trimmedEmail = email.trim().toLowerCase();
+
+  const emailRegex = /^[a-zA-Z0-9._%+-]+@([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}$/;
+  if (!emailRegex.test(trimmedEmail)) return false;
+
+  const domain = trimmedEmail.split('@')[1];
+  const domainParts = domain.split('.');
+
+  const lastPart = domainParts[domainParts.length - 1];
+  const secondLastPart = domainParts[domainParts.length - 2];
+
+  if (lastPart === secondLastPart) {
+    return false;
+  }
+
+  return true;
+}
+
 export async function registerUser(username, email, password) {
   const hashedPassword = await hash(password, 10);
   try {
     const query = 'INSERT INTO users (username, email, password) VALUES ($1, $2, $3)';
-    await pool.query(query, [username, email, hashedPassword]);
-    console.log(' User registered successfully!');
+    await pool.query(query, [username, email.toLowerCase(), hashedPassword]);
   } catch (err) {
     if (err.code === '23505') {
-      console.log('Username or email already exists.');
+      throw new Error('Username or email already exists.');
     } else {
-      console.error('Registration error:', err);
+      throw err;
     }
   }
 }
 
+export async function findUserByEmail(email) {
+  const query = 'SELECT * FROM users WHERE LOWER(email) = LOWER($1)';
+  const result = await pool.query(query, [email]);
+  return result.rows[0]; 
+}
+
 export async function loginUser(usernameOrEmail, password) {
   try {
-    const query = 'SELECT password FROM users WHERE username = $1 OR email = $1';
+    const query = `
+      SELECT * FROM users 
+      WHERE LOWER(username) = LOWER($1) OR LOWER(email) = LOWER($1)
+    `;
     const res = await pool.query(query, [usernameOrEmail]);
 
     if (res.rows.length === 0) {
@@ -52,3 +79,5 @@ export async function loginUser(usernameOrEmail, password) {
     return false;
   }
 }
+
+export { isValidEmail };

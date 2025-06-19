@@ -9,9 +9,6 @@ const rl = readline.createInterface({
 const ask = (question) =>
   new Promise((resolve) => rl.question(question, resolve));
 
-const isValidEmail = (email) =>
-  /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-
 (async () => {
   try {
     console.log('\n Register a New User\n');
@@ -23,18 +20,16 @@ const isValidEmail = (email) =>
 
     if (!username || !email || !password || !confirmPassword) {
       console.log('\n All fields are required.\n');
-    } else if (!isValidEmail(email)) {
-      console.log('\n Invalid email format.\n');
-    } else if (password.length < 6) {
-      console.log('\n Password must be at least 6 characters.\n');
     } else if (password !== confirmPassword) {
       console.log('\n Passwords do not match.\n');
     } else {
+      
       await registerUser(username, email, password);
       console.log('\n Registration successful! You can now log in.\n');
     }
+
   } catch (err) {
-    console.error('\n Error during registration:', err);
+    console.error('\n Registration failed:\n', err.message);
   } finally {
     rl.close();
   }
